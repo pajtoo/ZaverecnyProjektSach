@@ -18,9 +18,9 @@ public class UzivatelskeRozhrani {
     private UzivatelskyVstup vstup;
 
     /**
-     *
-     * @param scanner
-     * @param vstup
+     * Konstruktor
+     * @param scanner Scanner
+     * @param vstup Vstup
      */
     public UzivatelskeRozhrani(Scanner scanner, UzivatelskyVstup vstup) {
         this.scanner = scanner;

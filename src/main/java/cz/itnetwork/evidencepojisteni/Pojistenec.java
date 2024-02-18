@@ -7,7 +7,7 @@ package cz.itnetwork.evidencepojisteni;
 import java.util.ArrayList;
 
 /**
- *
+ * Třída reprezentující pojištěnce
  * @author Pavel
  */
 public class Pojistenec {
@@ -22,6 +22,13 @@ public class Pojistenec {
 
     private static int pocitadloId = 1;
 
+    /**
+     * Konstruktor pojištěnce
+     * @param jmeno Jméno
+     * @param prijmeni Příjmení
+     * @param vek Věk
+     * @param telefon Telefon
+     */
     public Pojistenec(String jmeno, String prijmeni, int vek, String telefon) {
         this.jmeno = jmeno;
         this.prijmeni = prijmeni;
