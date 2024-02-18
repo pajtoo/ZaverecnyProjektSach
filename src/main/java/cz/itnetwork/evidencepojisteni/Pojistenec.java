@@ -1,0 +1,101 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package cz.itnetwork.evidencepojisteni;
+
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Pavel
+ */
+public class Pojistenec {
+
+    private int id;
+    private String jmeno;
+    private String prijmeni;
+    private int vek; // maximální věk = 130
+    private String telefon;
+    /* Ukládá se v mezinárodním formátu bez mezer. V případě nezadání
+    mezinárodní předvolby je automaticky doplněna předvolba +420 */
+
+    private static int pocitadloId = 1;
+
+    public Pojistenec(String jmeno, String prijmeni, int vek, String telefon) {
+        this.jmeno = jmeno;
+        this.prijmeni = prijmeni;
+        this.vek = vek;
+        this.telefon = telefon;
+        id = pocitadloId;
+        pocitadloId++;
+    }
+
+    /**
+     * @return the jmeno
+     */
+    public String getJmeno() {
+        return jmeno;
+    }
+
+    /**
+     * @param jmeno the jmeno to set
+     */
+    public void setJmeno(String jmeno) {
+        this.jmeno = jmeno;
+    }
+
+    /**
+     * @return the prijmeni
+     */
+    public String getPrijmeni() {
+        return prijmeni;
+    }
+
+    /**
+     * @param prijmeni the prijmeni to set
+     */
+    public void setPrijmeni(String prijmeni) {
+        this.prijmeni = prijmeni;
+    }
+
+    /**
+     * @return the vek
+     */
+    public int getVek() {
+        return vek;
+    }
+
+    /**
+     * @param vek the vek to set
+     */
+    public void setVek(int vek) {
+        this.vek = vek;
+    }
+
+    /**
+     * @return the telefon
+     */
+    public String getTelefon() {
+        return telefon;
+    }
+
+    /**
+     * @param telefon the telefon to set
+     */
+    public void setTelefon(String telefon) {
+        this.telefon = telefon;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%d: %s, %s, %d, %s", id, prijmeni, jmeno, vek, telefon);
+    }
+}
