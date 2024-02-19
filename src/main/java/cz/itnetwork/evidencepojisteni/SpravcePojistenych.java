@@ -36,7 +36,7 @@ public class SpravcePojistenych {
     public List<Pojistenec> najdiPojistene(String jmeno, String prijmeni) {
         List<Pojistenec> vyhledaniPojistenci = new ArrayList<>();
         for (Pojistenec pojisteny : pojistenci) {
-            if (pojisteny.getJmeno().equals(jmeno) && pojisteny.getPrijmeni().equals(prijmeni)) {
+            if (pojisteny.getJmeno().equalsIgnoreCase(jmeno) && pojisteny.getPrijmeni().equalsIgnoreCase(prijmeni)) {
                 vyhledaniPojistenci.add(pojisteny);
             }
         }
