@@ -1,0 +1,13 @@
+Ceníme práci na projektu! 🏆 Prohlédli jsme si kód a máme k němu následující poznámky:
+
+1. Pojmenování identifikátorů - SpravcePojistenych vs Evidence Pojisteni - jedno je hlavní program, druhé třída spravující seznam, ale těžko to poznat. Podobně můžeme hádat, co je UzivatelskyVstup vs UzivatelskeRozhrani, jak mají rozdělené odpovědnosti
+2. Dodržení principů SRP a SoC - viz výše. 
+3. Vhodný výběr datových typů - ok
+4. Formátování kódu - ok
+5. Duplicitní kód a nekonečné cykly - nejprve načtu data, pak někdy spustím validaci, která (v případě, že to nevyhovuje) opět data znovu načítá, v jiné třídě a trochu jiným způsobem. Podobně výpis všech a výpis nalezených používá takřka stejný kód na různých místech.
+6. Validace vstupních dat - prováděna, připomínky viz výše
+7. Logičnost a složitost - v Pojištěnci je odkaz na ArrayList, ale nepoužívá se. Ve SprávciPojištěných je metoda upravPojisteneho(), která se také nepoužívá. Je ok, že seznam pojištěných bude vypisovat třeba id 1, 7, 24, když další mezitím byly smazány? Nebylo by lepší použít jako "id" třeba index v seznamu, který se sice bude měnit, ale čísla půjdou vždy po sobě?
+8. Komentáře - ok
+9. Celkové hodnocení - trocha refaktorování by z toho udělala velmi hezkou konzolovou aplikaci, viz připomínky výše. Pozn.: do git repository patří zdrojový kód, nikoli generované přeložené binární soubory.
+
+Doporučujeme případné výtky v kódu opravit, abyste jej mohli pak prezentovat budoucímu zaměstnavateli v co nejlepší kvalitě. Pokud byste potřebovali s čímkoli pomoci, naplánujte si s námi konzultaci, rádi vám poradíme!
