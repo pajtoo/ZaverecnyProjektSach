@@ -2,7 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package cz.itnetwork.evidencepojisteni;
+package cz.itnetwork.evidencepojisteni.service;
+
+import cz.itnetwork.evidencepojisteni.Pojistenec;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,16 +14,17 @@ import java.util.List;
  *
  * @author Pavel Šach
  */
-public class SpravcePojistenych {
+public class SpravcePojistenychImpl implements SpravcePojistenych {
 
     // Databáze pojištěnců
     private List<Pojistenec> pojistenci = new ArrayList<>();
 
-    /**
+     /**
      * Vrátí seznam všech pojištěných
      *
      * @return Seznam všech pojištěných
      */
+    @Override
     public List<Pojistenec> vratVsechnyPojistene() {
         return pojistenci;
     }
@@ -33,6 +36,7 @@ public class SpravcePojistenych {
      * @param prijmeni Příjmení hledaného pojištěného
      * @return Seznam pojištěných odpovídajících kritériím
      */
+    @Override
     public List<Pojistenec> najdiPojistene(String jmeno, String prijmeni) {
         List<Pojistenec> vyhledaniPojistenci = new ArrayList<>();
         for (Pojistenec pojisteny : pojistenci) {
@@ -49,6 +53,7 @@ public class SpravcePojistenych {
      * @param id ID pojištěného
      * @return Vrátí pojištěného se zadaným ID
      */
+    @Override
     public Pojistenec najdiPojisteneho(int id) {
         Pojistenec pojistenec = null;
         for (Pojistenec pojisteny : pojistenci) {
@@ -67,6 +72,7 @@ public class SpravcePojistenych {
      * @param vek Věk
      * @param telefon Telefonní číslo
      */
+    @Override
     public void pridejPojisteneho(String jmeno, String prijmeni, int vek, String telefon) {
         pojistenci.add(new Pojistenec(jmeno, prijmeni, vek, telefon));
     }
@@ -81,6 +87,7 @@ public class SpravcePojistenych {
      * @param novyTelefon Nový telefon pojištěného
      * @return Pokud uživatel s daným id existuje, vrátí true, jinak vrátí false
      */
+    @Override
     public boolean upravPojisteneho(int id, String noveJmeno, String novePrijmeni, int novyVek, String novyTelefon) {
         for (Pojistenec pojisteny : pojistenci) {
             if (pojisteny.getId() == id) {
@@ -101,6 +108,7 @@ public class SpravcePojistenych {
      * @return Vrací true, pokud pojištěný se zadaným id existuje, jinak vrací
      * false.
      */
+    @Override
     public boolean odstranPojisteneho(int id) {
         return pojistenci.remove(najdiPojisteneho(id));
     }

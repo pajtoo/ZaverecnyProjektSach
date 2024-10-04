@@ -4,6 +4,9 @@
  */
 package cz.itnetwork.evidencepojisteni;
 
+import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
+import cz.itnetwork.evidencepojisteni.service.SpravcePojistenychImpl;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,7 +17,7 @@ import java.util.Scanner;
 public class UzivatelskeRozhrani {
 
     private Scanner scanner;
-    private SpravcePojistenych spravcePojistenych = new SpravcePojistenych();
+    private SpravcePojistenych spravcePojistenych = new SpravcePojistenychImpl();
     private UzivatelskyVstup vstup;
 
     /**
