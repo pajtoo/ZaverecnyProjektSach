@@ -10,32 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Třída obsahuje databázi pojištěných a metody pro práci s touto databází
+ * Třída je implementací pro perzistenci pomocí PostgreSQL
  *
  * @author Pavel Šach
  */
 public class SpravcePojistenychImpl implements SpravcePojistenych {
 
-    // Databáze pojištěnců
-    private List<Pojistenec> pojistenci = new ArrayList<>();
-
-     /**
-     * Vrátí seznam všech pojištěných
-     *
-     * @return Seznam všech pojištěných
-     */
-    @Override
-    public List<Pojistenec> vratVsechnyPojistene() {
-        return pojistenci;
-    }
-
-    /**
-     * Vrátí seznam pojištěných odpovídajících kritériím
-     *
-     * @param jmeno Jméno hledaného pojištěného
-     * @param prijmeni Příjmení hledaného pojištěného
-     * @return Seznam pojištěných odpovídajících kritériím
-     */
     @Override
     public List<Pojistenec> najdiPojistene(String jmeno, String prijmeni) {
         List<Pojistenec> vyhledaniPojistenci = new ArrayList<>();
@@ -47,12 +27,6 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
         return vyhledaniPojistenci;
     }
 
-    /**
-     * Najde a vrátí pojištěného podle jeho ID
-     *
-     * @param id ID pojištěného
-     * @return Vrátí pojištěného se zadaným ID
-     */
     @Override
     public Pojistenec najdiPojisteneho(int id) {
         Pojistenec pojistenec = null;
@@ -64,29 +38,11 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
         return pojistenec;
     }
 
-    /**
-     * Vytvoří nového pojištěného
-     *
-     * @param jmeno Jméno
-     * @param prijmeni Příjmení
-     * @param vek Věk
-     * @param telefon Telefonní číslo
-     */
     @Override
     public void pridejPojisteneho(String jmeno, String prijmeni, int vek, String telefon) {
         pojistenci.add(new Pojistenec(jmeno, prijmeni, vek, telefon));
     }
 
-    /**
-     * Upraví atributy pojištěného s určitým id
-     *
-     * @param id ID pojištěného
-     * @param noveJmeno Nové jméno pojištěného
-     * @param novePrijmeni Nové příjmení pojištěného
-     * @param novyVek Nový věk pojištěného
-     * @param novyTelefon Nový telefon pojištěného
-     * @return Pokud uživatel s daným id existuje, vrátí true, jinak vrátí false
-     */
     @Override
     public boolean upravPojisteneho(int id, String noveJmeno, String novePrijmeni, int novyVek, String novyTelefon) {
         for (Pojistenec pojisteny : pojistenci) {
@@ -101,13 +57,6 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
         return false;
     }
 
-    /**
-     * Odstraní pojištěného se zadaným id, pokud existuje
-     *
-     * @param id ID odstraňovaného pojištěnce
-     * @return Vrací true, pokud pojištěný se zadaným id existuje, jinak vrací
-     * false.
-     */
     @Override
     public boolean odstranPojisteneho(int id) {
         return pojistenci.remove(najdiPojisteneho(id));

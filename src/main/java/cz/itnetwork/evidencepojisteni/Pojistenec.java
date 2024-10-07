@@ -12,15 +12,13 @@ import java.util.ArrayList;
  */
 public class Pojistenec {
 
-    private int id;
+    private Long id;
     private String jmeno;
     private String prijmeni;
     private int vek; // maximální věk = 130
     private String telefon;
     /* Ukládá se v mezinárodním formátu bez mezer. V případě nezadání
     mezinárodní předvolby je automaticky doplněna předvolba +420 */
-
-    private static int pocitadloId = 1;
 
     /**
      * Konstruktor pojištěnce
@@ -34,8 +32,6 @@ public class Pojistenec {
         this.prijmeni = prijmeni;
         this.vek = vek;
         this.telefon = telefon;
-        id = pocitadloId;
-        pocitadloId++;
     }
 
     /**
@@ -97,7 +93,7 @@ public class Pojistenec {
     /**
      * @return the id
      */
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
