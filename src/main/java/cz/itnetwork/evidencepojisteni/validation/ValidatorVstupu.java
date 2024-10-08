@@ -24,8 +24,7 @@ public class ValidatorVstupu {
          * Křestní jméno
          */
         JMENO(
-            "Jméno: ",
-            "Nové jméno: ",
+            true,
             null,
             null,
             ParametryValidaceEnum.TEXT_ODSTRAN_PREBYTECNE_MEZERY,
@@ -35,8 +34,7 @@ public class ValidatorVstupu {
          * Příjmení
          */
         PRIJMENI(
-            "Příjmení: ",
-            "Nové příjmení: ",
+            true,
             null,
             null,
             ParametryValidaceEnum.TEXT_ODSTRAN_PREBYTECNE_MEZERY,
@@ -46,8 +44,7 @@ public class ValidatorVstupu {
          * Telefon
          */
         TELEFON(
-            "Telefon: ",
-            "Nový telefon: ",
+            true,
             6,
             15,
             ParametryValidaceEnum.TELEFON_DOPLN_MEZINARODNI_PREDVOLBU
@@ -56,50 +53,45 @@ public class ValidatorVstupu {
          * Věk
          */
         VEK(
-            "Věk: ",
-            "Nový věk: ",
+            true,
             0,
             130
         ),
 
-        VOLBA_AKCE_V_MENU(null,null,null,null)
-        ;
+        VOLBA_AKCE_V_MENU(
+            true,
+            null,
+            null
+        );
 
 
-        private final String popisek;
-        private final String popisekEditace;
+        private final boolean povinny;
         private final Integer min;
         private final Integer max;
         private final ParametryValidaceEnum[] parametryValidace;
 
         ValidatorEnum(
-                String popisek,
-                String popisekEditace,
+                boolean povinny,
                 Integer min,
                 Integer max,
                 ParametryValidaceEnum... parametryValidaceEnum
         ) {
-            this.popisek = popisek;
-            this.popisekEditace = popisekEditace;
+            this.povinny = povinny;
             this.min = min;
             this.max = max;
             this.parametryValidace = parametryValidaceEnum;
         }
 
-        private Integer getMax() {
-            return max;
+        private boolean jePovinny() {
+            return povinny;
         }
 
         private Integer getMin() {
             return min;
         }
 
-        public String getPopisek() {
-            return popisek;
-        }
-
-        public String getPopisekEditace() {
-            return popisekEditace;
+        private Integer getMax() {
+            return max;
         }
 
         private ParametryValidaceEnum[] getParametryValidace() {
@@ -126,7 +118,13 @@ public class ValidatorVstupu {
         }
     }
 
-    public String zvaliduj(String vstup, boolean jePovinny, ValidatorEnum validatorEnum) throws InvalidUserInputException, NumberFormatException {
+    /**
+     * Univerzální metoda k validaci uživatelského vstupu, jejíž funkce se parametrizuje prostřednictvím parametrů.
+     * @param vstup Vstup k validaci
+     * @param validatorEnum Identifikátor položky pro správné zpracování příslušné položky validátorem
+     * @return Validní, standardizovaný vstup
+     */
+    public String zvaliduj(String vstup, ValidatorEnum validatorEnum) throws InvalidUserInputException, NumberFormatException {
         vstup = vstup.trim();
 
         boolean isText = false;
@@ -143,7 +141,7 @@ public class ValidatorVstupu {
                 validatorEnum.toString().equals(ValidatorEnum.VOLBA_AKCE_V_MENU.toString())
         ) isNumber = true;
 
-        if (vstup.isEmpty() && jePovinny) {
+        if (vstup.isEmpty() && validatorEnum.jePovinny()) {
             throw new InvalidUserInputException("Pole nemůže být prázdné. ");
         }
         // Pokud je vstup prázdný a není povinný, jedná se o editaci položky a data se za této podmínky nemění

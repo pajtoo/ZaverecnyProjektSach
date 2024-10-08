@@ -4,8 +4,12 @@
  */
 package cz.itnetwork.evidencepojisteni.view;
 
-import cz.itnetwork.evidencepojisteni.Pojistenec;
+import cz.itnetwork.evidencepojisteni.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.view.enums.ZpravyOVysledkuOperaceEnum;
+import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,6 +20,8 @@ import java.util.Scanner;
 public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
 
     private Scanner scanner;
+    private String oddelovac = "------------------------------------------------";
+    private String oddelovacln = oddelovac + System.lineSeparator();
 
     /**
      * Konstruktor
@@ -27,14 +33,13 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
 
     @Override
     public void vykresliUvodniObrazovku() {
-        System.out.println("------------------------------------------------");
+        System.out.println(oddelovac);
         System.out.println("*** E V I D E N C E  P O J I Š T Ě N Ý C H ***");
-        System.out.println("------------------------------------------------");
-        System.out.println("");
+        System.out.println(oddelovacln);
     }
 
     @Override
-    public String vypisUvodniNabidku() {
+    public void vypisUvodniNabidku() {
             System.out.println("Zvolte si z následující nabídky (zadejte číslo volby a stiskněte enter):");
             System.out.println("1 - Vypsat všechny pojištěnce");
             System.out.println("2 - Vyhledat pojištěnce");
@@ -42,22 +47,19 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
             System.out.println("4 - Upravit pojištěnce");
             System.out.println("5 - Odstranit pojištěnce");
             System.out.println("6 - Konec");
-
-            return scanner.nextLine();
     }
 
     @Override
-    public void vypisVsechnyPojistence() {
-        if (!spravcePojistenych.vratVsechnyPojistene().isEmpty()) {
+    public void vypisVsechnyPojistence(List<PojistenecDTO> pojistenci) {
+        if (!pojistenci.isEmpty()) {
             System.out.println("----- Přehled pojištěných osob (ID: přijmení, jméno, věk, tel.) -----");
 
-            for (Pojistenec pojistenec : spravcePojistenych.vratVsechnyPojistene()) {
+            for (PojistenecDTO pojistenec : pojistenci) {
                 System.out.println(pojistenec);
             }
-            System.out.println("----------------------------------------");
-            System.out.println("");
+            System.out.println(oddelovacln);
         } else {
-            vypisZpravuUspech("Nenalezeny žádné záznamy.");
+            vypisZpravu(ZpravyOVysledkuOperaceEnum.ITEMS_NOT_FOUND.message);
         }
     }
 
@@ -71,26 +73,33 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
         System.out.print("Příjmení: ");
         String prijmeni = vstup.zvalidujJmenoPrijmeni(scanner.nextLine());
 
-        List<Pojistenec> nalezeniPojistenci = spravcePojistenych.najdiPojistene(jmeno, prijmeni);
+        List<PojistenecDTO> nalezeniPojistenci = spravcePojistenych.najdiPojistene(jmeno, prijmeni);
         if (!nalezeniPojistenci.isEmpty()) {
-            System.out.println("----------------------------------------");
+            System.out.println(oddelovac);
             System.out.println("Nalezení pojištěnci (ID: příjmení, jméno, věk, tel.): ");
-            for (Pojistenec pojistenec : nalezeniPojistenci) {
+            for (PojistenecDTO pojistenec : nalezeniPojistenci) {
                 System.out.println(pojistenec);
             }
-            System.out.println("----------------------------------------");
-            System.out.println("");
+            System.out.println(oddelovacln);
         } else {
-            vypisZpravuUspech("Nebyl nalezen žádný pojištěný odpovídající daným kritériím.");
+            vypisZpravu(ZpravyOVysledkuOperaceEnum.INSURED_PARAMETERS_NOT_FOUND.message);
         }
     }
 
     @Override
-    public void pridejPojistence() {
+    public List<String> pridejPojistence(List<PopiskyEnum> polozky) {
         System.out.println("----- Přidání nového pojištěného -----");
         System.out.println("Zadejte údaje o pojištěném");
 
-        System.out.print("Křestní jméno: ");
+        List<String> zadaneHodnoty = new ArrayList<>();
+        for (PopiskyEnum polozka : polozky) {
+            System.out.print(polozka.popisek);
+            zadaneHodnoty.add(scanner.nextLine());
+        }
+
+        return vyplnenePolozky;
+
+        jmeno
         String jmeno = vstup.zvalidujJmenoPrijmeni(scanner.nextLine());
         System.out.print("Příjmení: ");
         String prijmeni = vstup.zvalidujJmenoPrijmeni(scanner.nextLine());
@@ -101,7 +110,7 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
 
         spravcePojistenych.pridejPojisteneho(jmeno, prijmeni, vek, telefon);
 
-        vypisZpravuUspech("Nový pojištěný byl úspěšně přidán.");
+        vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message);
     }
 
     @Override
@@ -110,7 +119,7 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
         System.out.println("----- Editace pojištěnce -----");
         System.out.print("Zadejte id pojištěnce, kterého chcete upravit: ");
         int id = vstup.zvalidujCislo(scanner.nextLine());
-        Pojistenec pojisteny = spravcePojistenych.najdiPojisteneho(id);
+        PojistenecDTO pojisteny = spravcePojistenych.najdiPojisteneho(id);
         if (pojisteny != null) {
             System.out.println("Zadejte nové údaje (pokud nic nezadáte, zůstane původní údaj.");
 
@@ -143,10 +152,10 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
                 pojisteny.setTelefon(novyTelefon);
             }
 
-            vypisZpravuUspech("Údaje pojištěnce byly upraveny.");
+            vypisZpravu(ZpravyOVysledkuOperaceEnum.UPDATE_SUCCESS.message);
 
         } else {
-            vypisZpravuUspech("Pojištěnec se zadaným ID nebyl nalezen.");
+            vypisZpravu(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message);
         }
     }
 
@@ -156,24 +165,17 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
         System.out.print("Zadejte id pojištěnce, kterého chcete odstranit: ");
         int id = vstup.zvalidujCislo(scanner.nextLine());
         if (spravcePojistenych.odstranPojisteneho(id)) {
-            vypisZpravuUspech("Pojištěný byl úspěšně odstraněn.");
+            vypisZpravu(ZpravyOVysledkuOperaceEnum.DELETE_SUCCESS.message);
         } else {
-            vypisZpravuUspech("Pojištěnec se zadaným ID nebyl nalezen.");
+            vypisZpravu(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message);
         }
 
     }
 
-    @Override
-    public void vypisZpravuUspech(String zprava) {
-        System.out.println("----------------------------------------");
+    public void vypisZpravu(String zprava) {
+        System.out.println(oddelovac);
         System.out.println(zprava);
-        System.out.println("----------------------------------------");
-        System.out.println("");
-    }
-
-    @Override
-    public String ziskejVstup() {
-        return "";
+        System.out.println(oddelovacln);
     }
 
     public void vypisChybovouHlasku(Exception ex) {
@@ -182,4 +184,10 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
     public void vyzviKOpakovaniZadani() {
         System.out.print("Opakujte prosím zadání: ");
     }
+
+    @Override
+    public String ziskejOpravenyVstup() {
+        return scanner.nextLine();
+    }
+
 }

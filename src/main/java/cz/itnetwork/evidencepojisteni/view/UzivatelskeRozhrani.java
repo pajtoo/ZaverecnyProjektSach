@@ -1,5 +1,9 @@
 package cz.itnetwork.evidencepojisteni.view;
 
+import cz.itnetwork.evidencepojisteni.PojistenecDTO;
+
+import java.util.List;
+
 public interface UzivatelskeRozhrani {
     /**
      * Spustí program vykreslením úvodní obrazovky a nabídky
@@ -11,12 +15,12 @@ public interface UzivatelskeRozhrani {
      *
      * @return
      */
-    String vypisUvodniNabidku();
+    void vypisUvodniNabidku();
 
     /**
      * Vypíše všechny pojištěnce
      */
-    void vypisVsechnyPojistence();
+    void vypisVsechnyPojistence(List<PojistenecDTO> pojistenci);
 
     /**
      * Vypíše pojištěnce odpovídající kritériím
@@ -39,11 +43,10 @@ public interface UzivatelskeRozhrani {
     void odstranPojistence();
 
     /**
-     * Zpráva pro uživatele o úspěšném výsledku operace.
-     *
+     * Zpráva pro uživatele o výsledku operace.
      * @param zprava Sdělení uživateli
      */
-    void vypisZpravuUspech(String zprava);
+    void vypisZpravu(String zprava);
 
     /**
      * Vypíše chybovou hlášku
@@ -51,6 +54,10 @@ public interface UzivatelskeRozhrani {
      */
     void vypisChybovouHlasku(Exception ex);
 
+    /**
+     * Vypíše popisek charakterizující
+     */
+    void vypisPolozku();
     /**
      * Vyzve uzivatele k zadání textu
      * @return zadaný text

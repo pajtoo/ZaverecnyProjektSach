@@ -4,13 +4,11 @@
  */
 package cz.itnetwork.evidencepojisteni;
 
-import java.util.ArrayList;
-
 /**
  * Třída reprezentující pojištěnce
  * @author Pavel
  */
-public class Pojistenec {
+public class PojistenecDTO {
 
     private Long id;
     private String jmeno;
@@ -27,7 +25,7 @@ public class Pojistenec {
      * @param vek Věk
      * @param telefon Telefon
      */
-    public Pojistenec(String jmeno, String prijmeni, int vek, String telefon) {
+    public PojistenecDTO(String jmeno, String prijmeni, int vek, String telefon) {
         this.jmeno = jmeno;
         this.prijmeni = prijmeni;
         this.vek = vek;

@@ -1,6 +1,6 @@
 package cz.itnetwork.evidencepojisteni.service;
 
-import cz.itnetwork.evidencepojisteni.Pojistenec;
+import cz.itnetwork.evidencepojisteni.PojistenecDTO;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public interface SpravcePojistenych {
      *
      * @return Seznam všech pojištěných
      */
-    List<Pojistenec> vratVsechnyPojistene();
+    List<PojistenecDTO> vratVsechnyPojistene();
 
     /**
      * Vrátí seznam pojištěných odpovídajících kritériím
@@ -19,7 +19,7 @@ public interface SpravcePojistenych {
      * @param prijmeni Příjmení hledaného pojištěného
      * @return Seznam pojištěných odpovídajících kritériím
      */
-    List<Pojistenec> najdiPojistene(String jmeno, String prijmeni);
+    List<PojistenecDTO> najdiPojistene(String jmeno, String prijmeni);
 
     /**
      * Najde a vrátí pojištěného podle jeho ID
@@ -27,7 +27,7 @@ public interface SpravcePojistenych {
      * @param id ID pojištěného
      * @return Vrátí pojištěného se zadaným ID
      */
-    Pojistenec najdiPojisteneho(int id);
+    PojistenecDTO najdiPojisteneho(int id);
 
     /**
      * Vytvoří nového pojištěného

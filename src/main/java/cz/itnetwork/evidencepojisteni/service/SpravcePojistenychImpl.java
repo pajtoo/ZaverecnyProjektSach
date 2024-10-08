@@ -4,7 +4,7 @@
  */
 package cz.itnetwork.evidencepojisteni.service;
 
-import cz.itnetwork.evidencepojisteni.Pojistenec;
+import cz.itnetwork.evidencepojisteni.PojistenecDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +16,14 @@ import java.util.List;
  */
 public class SpravcePojistenychImpl implements SpravcePojistenych {
 
+    public List<PojistenecDTO> vratVsechnyPojistene() {
+        //TODO
+    };
+
     @Override
-    public List<Pojistenec> najdiPojistene(String jmeno, String prijmeni) {
-        List<Pojistenec> vyhledaniPojistenci = new ArrayList<>();
-        for (Pojistenec pojisteny : pojistenci) {
+    public List<PojistenecDTO> najdiPojistene(String jmeno, String prijmeni) {
+        List<PojistenecDTO> vyhledaniPojistenci = new ArrayList<>();
+        for (PojistenecDTO pojisteny : pojistenci) {
             if (pojisteny.getJmeno().equalsIgnoreCase(jmeno) && pojisteny.getPrijmeni().equalsIgnoreCase(prijmeni)) {
                 vyhledaniPojistenci.add(pojisteny);
             }
@@ -28,29 +32,29 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     }
 
     @Override
-    public Pojistenec najdiPojisteneho(int id) {
-        Pojistenec pojistenec = null;
-        for (Pojistenec pojisteny : pojistenci) {
+    public PojistenecDTO najdiPojisteneho(int id) {
+        PojistenecDTO pojistenecDTO = null;
+        for (PojistenecDTO pojisteny : pojistenci) {
             if (pojisteny.getId() == id) {
-                pojistenec = pojisteny;
+                pojistenecDTO = pojisteny;
             }
         }
-        return pojistenec;
+        return pojistenecDTO;
     }
 
     @Override
     public void pridejPojisteneho(String jmeno, String prijmeni, int vek, String telefon) {
-        pojistenci.add(new Pojistenec(jmeno, prijmeni, vek, telefon));
+        pojistenci.add(new PojistenecDTO(jmeno, prijmeni, vek, telefon));
     }
 
     @Override
     public boolean upravPojisteneho(int id, String noveJmeno, String novePrijmeni, int novyVek, String novyTelefon) {
-        for (Pojistenec pojisteny : pojistenci) {
-            if (pojisteny.getId() == id) {
-                pojisteny.setJmeno(noveJmeno);
-                pojisteny.setPrijmeni(novePrijmeni);
-                pojisteny.setVek(novyVek);
-                pojisteny.setTelefon(novyTelefon);
+        for (PojistenecDTO pojistenec : pojistenci) {
+            if (pojistenec.getId() == id) {
+                pojistenec.setJmeno(noveJmeno);
+                pojistenec.setPrijmeni(novePrijmeni);
+                pojistenec.setVek(novyVek);
+                pojistenec.setTelefon(novyTelefon);
                 return true;
             }
         }
