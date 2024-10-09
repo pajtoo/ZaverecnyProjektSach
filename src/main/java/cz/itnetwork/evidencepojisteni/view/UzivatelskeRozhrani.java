@@ -1,6 +1,7 @@
 package cz.itnetwork.evidencepojisteni.view;
 
 import cz.itnetwork.evidencepojisteni.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 
 import java.util.List;
 
@@ -29,8 +30,10 @@ public interface UzivatelskeRozhrani {
 
     /**
      * Přidá nového pojištěnce
+     *
+     * @return
      */
-    void pridejPojistence();
+    List<String> pridejPojistence(List<PopiskyEnum> polozky);
 
     /**
      * Upraví pojištěnce se zadaným ID

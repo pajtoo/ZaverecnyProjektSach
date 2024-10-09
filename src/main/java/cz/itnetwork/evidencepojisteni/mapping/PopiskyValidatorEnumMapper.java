@@ -1,3 +1,4 @@
+package cz.itnetwork.evidencepojisteni.mapping;
 
 public class PopiskyValidatorEnumMapper {
     private static final Map<FirstEnum, SecondEnum> enumMap = new HashMap<>();

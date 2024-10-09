@@ -2,6 +2,8 @@ package cz.itnetwork.evidencepojisteni.controller;
 
 import cz.itnetwork.evidencepojisteni.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.exception.InvalidUserInputException;
+import cz.itnetwork.evidencepojisteni.mapping.MappingObject;
+import cz.itnetwork.evidencepojisteni.mapping.PojistenecMapper;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
@@ -9,6 +11,7 @@ import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -73,7 +76,9 @@ public class InsuredController {
     }
 
     private void pridejPojistence() {
-        List<PopiskyEnum> polozky = Arrays.asList(
+        List<MappingObject> polozky = ziskejMappingAtributu();
+
+                Arrays.asList(
             PopiskyEnum.JMENO, 
             PopiskyEnum.PRIJMENI,
             PopiskyEnum.TELEFON,
@@ -96,6 +101,27 @@ public class InsuredController {
         zadaneHodnoty.forEach((key, value) -> {
             zvalidovanePolozky.add(zajistiValidniVstup(key, value));
         });
+    }
+
+    /**
+     * Získá list mapovacích objektů k atributům přítomným v PojištěnecDTO s výjimkou id.
+     * Poskytne aktuální soubor položek zjišťovaných u pojištěnce, který slouží jako prostředek k
+     * automatizaci procesu získávání hodnot k jednotlivým položkám.
+     * @return list mapovacích objektů k atributům přítomným v PojištěnecDTO be id
+     */
+    private <T> List<MappingObject> ziskejMappingAtributu() {
+        Field[] atributy = PojistenecDTO.class.getFields();
+        List<MappingObject> mapListAtributyBezId = new ArrayList<>();
+        //cyklu
+        for (int i = 1; i < atributy.length; i++) {
+            for (MappingObject object : PojistenecMapper.getMappingList()) {
+                if (atributy[i].getName().equals(object.getNazevAtributu())) {
+                    mapListAtributyBezId.add(object);
+                    break;
+                }
+            }
+        }
+        return mapListAtributyBezId;
     }
 
     private void vypisVyhledanePojistence() {
