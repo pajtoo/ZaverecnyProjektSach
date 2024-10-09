@@ -10,23 +10,16 @@ public class MappingObject {
         PopiskyEnum popisek,
         ValidatorEnum validator
     ) {
-        this.nazevAtributu = nazevAtributu;
         this.popisek = popisek;
         this.validator = validator;
     }
 
-    private final String nazevAtributu;
     private final PopiskyEnum popisek;
     private final ValidatorEnum validator;
-
-    public String getNazevAtributu() {
-        return nazevAtributu;
-    }
 
     public PopiskyEnum getPopisek() {
         return popisek;
     }
-
     public ValidatorEnum getValidator() {
         return validator;
     }

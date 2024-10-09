@@ -6,16 +6,14 @@ import cz.itnetwork.evidencepojisteni.mapping.MappingObject;
 import cz.itnetwork.evidencepojisteni.mapping.PojistenecMapper;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
+import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
 import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InsuredController {
 
@@ -44,7 +42,7 @@ public class InsuredController {
         boolean isKonec = false;
         while (!isKonec) {
             ui.vypisUvodniNabidku();
-            int volba = Integer.parseInt(zajistiValidniVstup(ValidatorVstupu.ValidatorEnum.VOLBA_AKCE_V_MENU));
+            int volba = Integer.parseInt(zajistiValidniVstup(ValidatorEnum.VOLBA_AKCE_V_MENU));
 
             switch (volba) {
                 case 1:
@@ -76,17 +74,14 @@ public class InsuredController {
     }
 
     private void pridejPojistence() {
-        List<MappingObject> polozky = ziskejMappingAtributu();
-
-                Arrays.asList(
-            PopiskyEnum.JMENO, 
-            PopiskyEnum.PRIJMENI,
-            PopiskyEnum.TELEFON,
-            PopiskyEnum.VEK
+        Map<String,MappingObject> itemsMap = ziskejMappingAtributu();
+        List<String> zadaneHodnoty = ui.pridejPojistence(
+                itemsMap.values().stream()
+                        .map(MappingObject::getPopisek)
+                        .toList()
         );
-        List<String> zadaneHodnoty = ui.pridejPojistence(polozky);
 
-        HashMap<ValidatorVstupu.ValidatorEnum, String> vyplnenePolozky = new HashMap<>();
+        HashMap<ValidatorEnum, String> vyplnenePolozky = new HashMap<>();
         // namapování ziskaných položek na položky validátoru
         for (PopiskyEnum polozka : polozky) {
             for (String zadanaHodnota : zadaneHodnoty) {
@@ -104,24 +99,24 @@ public class InsuredController {
     }
 
     /**
-     * Získá list mapovacích objektů k atributům přítomným v PojištěnecDTO s výjimkou id.
+     * Získá slovník (map) s položkami (atribut, MappingObject) ke každému z atributů přítomných v PojištěnecDTO s výjimkou id.
      * Poskytne aktuální soubor položek zjišťovaných u pojištěnce, který slouží jako prostředek k
      * automatizaci procesu získávání hodnot k jednotlivým položkám.
-     * @return list mapovacích objektů k atributům přítomným v PojištěnecDTO be id
+     * @return slovník s mapovacími objekty k atributům přítomným v PojištěnecDTO be id
      */
-    private <T> List<MappingObject> ziskejMappingAtributu() {
+    private Map<String, MappingObject> ziskejMappingAtributu() {
         Field[] atributy = PojistenecDTO.class.getFields();
-        List<MappingObject> mapListAtributyBezId = new ArrayList<>();
+        Map<String, MappingObject> mapAtributyBezId = new HashMap<>();
         //cyklu
         for (int i = 1; i < atributy.length; i++) {
-            for (MappingObject object : PojistenecMapper.getMappingList()) {
-                if (atributy[i].getName().equals(object.getNazevAtributu())) {
-                    mapListAtributyBezId.add(object);
+            PojistenecMapper.getMappingMap().forEach((key, value) -> {
+                if (atributy[i].getName().equals(key)) {
+                    mapAtributyBezId.put(key, value);
                     break;
                 }
-            }
+            });
         }
-        return mapListAtributyBezId;
+        return mapAtributyBezId;
     }
 
     private void vypisVyhledanePojistence() {

@@ -4,19 +4,21 @@ import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PojistenecMapper {
-    private static final List<MappingObject> mappingList = new ArrayList<>();
+    private static final Map<String,MappingObject> MAPPING_MAP = new HashMap<String, MappingObject>();
 
     static {
-        mappingList.add(new MappingObject("jmeno", PopiskyEnum.JMENO, ValidatorVstupu.ValidatorEnum.JMENO));
-        mappingList.add(new MappingObject("prijmeni", PopiskyEnum.PRIJMENI, ValidatorVstupu.ValidatorEnum.PRIJMENI));
-        mappingList.add(new MappingObject("vek", PopiskyEnum.VEK, ValidatorVstupu.ValidatorEnum.VEK));
-        mappingList.add(new MappingObject("telefon", PopiskyEnum.TELEFON, ValidatorVstupu.ValidatorEnum.TELEFON));
+        MAPPING_MAP.put("jmeno", new MappingObject(PopiskyEnum.JMENO, ValidatorVstupu.ValidatorEnum.JMENO));
+        MAPPING_MAP.put("prijmeni", new MappingObject(PopiskyEnum.PRIJMENI, ValidatorVstupu.ValidatorEnum.PRIJMENI));
+        MAPPING_MAP.put("vek", new MappingObject(PopiskyEnum.VEK, ValidatorVstupu.ValidatorEnum.VEK));
+        MAPPING_MAP.put("telefon", new MappingObject(PopiskyEnum.TELEFON, ValidatorVstupu.ValidatorEnum.TELEFON));
     }
 
-    public static List<MappingObject> getMappingList() {
-        return mappingList;
+    public static Map<String, MappingObject> getMappingMap() {
+        return MAPPING_MAP;
     }
 }
