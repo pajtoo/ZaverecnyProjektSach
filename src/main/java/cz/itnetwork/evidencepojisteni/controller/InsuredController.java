@@ -83,10 +83,12 @@ public class InsuredController {
 
         HashMap<ValidatorEnum, String> vyplnenePolozky = new HashMap<>();
         // namapování ziskaných položek na položky validátoru
-        for (PopiskyEnum polozka : polozky) {
+        for (PopiskyEnum polozka : itemsMap) {
             for (String zadanaHodnota : zadaneHodnoty) {
                 vyplnenePolozky.put(
-                    PopiskyValidatorEnumMapper.map(polozka),
+                        itemsMap.values().stream()
+                                .map(MappingObject::getPopisek)
+                                .toList(),
                     zadanaHodnota
                 );
             }       
@@ -109,12 +111,14 @@ public class InsuredController {
         Map<String, MappingObject> mapAtributyBezId = new HashMap<>();
         //cyklu
         for (int i = 1; i < atributy.length; i++) {
-            PojistenecMapper.getMappingMap().forEach((key, value) -> {
+            for (Map.Entry<String, MappingObject> entry : PojistenecMapper.getMappingMap().entrySet()) {
+                String key = entry.getKey();
+                MappingObject value = entry.getValue();
                 if (atributy[i].getName().equals(key)) {
                     mapAtributyBezId.put(key, value);
                     break;
                 }
-            });
+            }
         }
         return mapAtributyBezId;
     }

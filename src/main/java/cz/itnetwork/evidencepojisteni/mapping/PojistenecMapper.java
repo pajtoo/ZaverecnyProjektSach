@@ -2,10 +2,7 @@ package cz.itnetwork.evidencepojisteni.mapping;
 
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class PojistenecMapper {
