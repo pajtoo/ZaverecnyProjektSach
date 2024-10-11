@@ -20,10 +20,10 @@ public class InputDTOMapper<T> {
         Object instanceDTO = constructor.newInstance();
 
         Method[] setteryBezId = Arrays.stream(instanceDTO.getClass().getMethods())
-               .filter(metoda -> {
+               .filter(metoda ->
                    metoda.getName().contains("set") &&
                            metoda.getName().equalsIgnoreCase("id");
-               }).forEach(metod -> {
+               ).forEach(metod -> {
                    metoda.invoke()
                });
     }
