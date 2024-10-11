@@ -124,7 +124,7 @@ public class ValidatorVstupu {
      * @param validatorEnum Identifikátor položky pro správné zpracování příslušné položky validátorem
      * @return Validní, standardizovaný vstup
      */
-    public String zvaliduj(String vstup, ValidatorEnum validatorEnum) throws InvalidUserInputException, NumberFormatException {
+    public String zvaliduj(ValidatorEnum validatorEnum, String vstup) throws InvalidUserInputException, NumberFormatException {
         vstup = vstup.trim();
 
         boolean isText = false;

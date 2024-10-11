@@ -19,6 +19,11 @@ public class PojistenecDTO {
     mezinárodní předvolby je automaticky doplněna předvolba +420 */
 
     /**
+     * No args constructor
+     */
+    public PojistenecDTO(){};
+
+    /**
      * Konstruktor pojištěnce
      * @param jmeno Jméno
      * @param prijmeni Příjmení
