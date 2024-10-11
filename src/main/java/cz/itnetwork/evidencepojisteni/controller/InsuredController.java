@@ -3,7 +3,7 @@ package cz.itnetwork.evidencepojisteni.controller;
 import cz.itnetwork.evidencepojisteni.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.exception.InvalidUserInputException;
 import cz.itnetwork.evidencepojisteni.mapping.MappingObject;
-import cz.itnetwork.evidencepojisteni.mapping.PojistenecMapper;
+import cz.itnetwork.evidencepojisteni.mapping.Mapper;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
@@ -12,7 +12,6 @@ import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class InsuredController {
@@ -74,7 +73,8 @@ public class InsuredController {
     }
 
     private void pridejPojistence() {
-        Map<String,MappingObject> itemsMap = ziskejMappingAtributu();
+        // Získá slovník obsahující položky
+        Map<String,MappingObject> itemsMap = Mapper.getFieldMapping(PojistenecDTO.class);
         List<String> zadaneHodnoty = ui.pridejPojistence(
                 itemsMap.values().stream()
                         .map(MappingObject::getPopisek)
@@ -100,28 +100,7 @@ public class InsuredController {
         });
     }
 
-    /**
-     * Získá slovník (map) s položkami (atribut, MappingObject) ke každému z atributů přítomných v PojištěnecDTO s výjimkou id.
-     * Poskytne aktuální soubor položek zjišťovaných u pojištěnce, který slouží jako prostředek k
-     * automatizaci procesu získávání hodnot k jednotlivým položkám.
-     * @return slovník s mapovacími objekty k atributům přítomným v PojištěnecDTO be id
-     */
-    private Map<String, MappingObject> ziskejMappingAtributu() {
-        Field[] atributy = PojistenecDTO.class.getFields();
-        Map<String, MappingObject> mapAtributyBezId = new HashMap<>();
-        //cyklu
-        for (int i = 1; i < atributy.length; i++) {
-            for (Map.Entry<String, MappingObject> entry : PojistenecMapper.getMappingMap().entrySet()) {
-                String key = entry.getKey();
-                MappingObject value = entry.getValue();
-                if (atributy[i].getName().equals(key)) {
-                    mapAtributyBezId.put(key, value);
-                    break;
-                }
-            }
-        }
-        return mapAtributyBezId;
-    }
+
 
     private void vypisVyhledanePojistence() {
         ui.vypis
