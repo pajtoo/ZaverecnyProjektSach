@@ -4,7 +4,7 @@
  */
 package cz.itnetwork.evidencepojisteni.service;
 
-import cz.itnetwork.evidencepojisteni.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 
 import java.util.ArrayList;
 import java.util.List;

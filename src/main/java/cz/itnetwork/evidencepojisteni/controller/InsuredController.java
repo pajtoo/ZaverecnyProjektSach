@@ -1,10 +1,8 @@
 package cz.itnetwork.evidencepojisteni.controller;
 
-import cz.itnetwork.evidencepojisteni.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.exception.InvalidUserInputException;
-import cz.itnetwork.evidencepojisteni.mapping.Mapper;
-import cz.itnetwork.evidencepojisteni.mapping.MappingObject;
-import cz.itnetwork.evidencepojisteni.mapping.FieldMap;
+import cz.itnetwork.evidencepojisteni.mapping.MappingDataProvider;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
@@ -20,16 +18,18 @@ public class InsuredController {
     private UzivatelskeRozhrani ui;
     private SpravcePojistenych spravcePojistenych;
     private ValidatorVstupu validator;
-    private Mapper pojistenecMapper = new Mapper(PojistenecDTO.class);
+    private MappingDataProvider pojistenecMappingDataProvider;
 
     public InsuredController(
             UzivatelskeRozhrani ui,
             SpravcePojistenych spravcePojistenych,
-            ValidatorVstupu validator
+            ValidatorVstupu validator,
+            MappingDataProvider pojistenecMappingDataProvider
             ) {
         this.ui = ui;
         this.spravcePojistenych = spravcePojistenych;
         this.validator = validator;
+        this.pojistenecMappingDataProvider = pojistenecMappingDataProvider;
     }
 
     public void run() {
@@ -74,28 +74,39 @@ public class InsuredController {
     }
 
     private void pridejPojistence() {
-        // Získá slovník obsahující data k atributům Pojistence
-        java.util.Map<String,MappingObject> itemsMap = FieldMap.getFieldMapping(PojistenecDTO.class);
-        List<String> zadaneHodnoty = ui.pridejPojistence(pojistenecMapper.getFieldLabels());
+        // Získání dat z uživatelského vstupu
+        List<String> zadaneHodnoty = ui.pridejPojistence(pojistenecMappingDataProvider.getFieldLabels());
 
-        HashMap<ValidatorEnum, String> vyplnenePolozky = new HashMap<>();
-        // namapování ziskaných položek na položky validátoru
-        for (ValidatorEnum FieldCriteria : pojistenecMapper.getValidatorCriteria()) {
+        // Příprava vstupních dat pro validátor
+        HashMap<ValidatorEnum, String> hodnotyKValidaci = new HashMap<>();
+        for (ValidatorEnum fieldCriteria : pojistenecMappingDataProvider.getValidatorCriteria()) {
             for (String zadanaHodnota : zadaneHodnoty) {
-                vyplnenePolozky.put(
-                        itemsMap.values().stream()
-                                .map(MappingObject::getPopisek)
-                                .toList(),
+                hodnotyKValidaci.put(
+                    fieldCriteria,
                     zadanaHodnota
                 );
             }       
         }
 
-        //namapování na PojistenecDTO
-        List<String> zvalidovanePolozky = new ArrayList<>();
-        zadaneHodnoty.forEach((key, value) -> {
-            zvalidovanePolozky.add(zajistiValidniVstup(key, value));
+        // Validace dat
+        List<String> zvalidovaneHodnoty = new ArrayList<>();
+        hodnotyKValidaci.forEach((key, value) -> {
+            zvalidovaneHodnoty.add(zajistiValidniVstup(key, value));
         });
+        // Seznam atributů
+        List<String> seznamAtributu = pojistenecMappingDataProvider.getFieldNames();
+        //Příprava slovníku pro InputDTOMapper
+        Map<String, String> validniPolozky= new HashMap<>();
+        for (int i = 0; i < zvalidovaneHodnoty.size(); i++) {
+            validniPolozky.put(
+                    seznamAtributu.get(i),
+                    zvalidovaneHodnoty.get(i)
+            );
+        }
+
+        // Namapování na PojistenecDTO
+        PojistenecDTO pojistenecDTO = new PojistenecDTO();
+        PojistenecDTO.class.getConstructor()
     }
 
 
@@ -111,18 +122,18 @@ public class InsuredController {
      * @param vstupVolitelny Textový vstup - nepovinný argument (zpracuje pouze první položku z pole)
      * @return Validní a standardizovaný vstup
      */
-    private String zajistiValidniVstup(ValidatorVstupu.ValidatorEnum validatorEnum, String... vstupVolitelny) {   
+    private String zajistiValidniVstup(ValidatorEnum validatorEnum, String... vstupVolitelny) {
         String vstup;
         if (vstupVolitelny.length > 0) {
             vstup = vstupVolitelny[0];
         } else
             vstup = ui.ziskejVstup();
         try {
-            vstup = validator.zvaliduj(volba, validatorEnum);
+            vstup = validator.zvaliduj(validatorEnum, vstup);
         } catch (InvalidUserInputException | NumberFormatException ex) {
             zpracujChybnyVstup(ex);
             ui.vyzviKOpakovaniZadani();
-            return zajistiValidniVstup(vstup, validatorEnum);
+            return zajistiValidniVstup(validatorEnum, vstup);
         }
         return vstup;
     }

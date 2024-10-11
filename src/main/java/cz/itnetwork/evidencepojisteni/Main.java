@@ -4,6 +4,8 @@
 package cz.itnetwork.evidencepojisteni;
 
 import cz.itnetwork.evidencepojisteni.controller.InsuredController;
+import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.mapping.MappingDataProvider;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenychImpl;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
@@ -23,7 +25,12 @@ public class Main {
         ValidatorVstupu validator = new ValidatorVstupu();
         UzivatelskeRozhrani ui = new UzivatelskeRozhraniImpl(scanner);
         SpravcePojistenych spravcePojistenych = new SpravcePojistenychImpl();
-        InsuredController insuredController = new InsuredController(ui, spravcePojistenych, validator);
+        MappingDataProvider pojistenecMappingDataProvider = new MappingDataProvider(PojistenecDTO.class);
+        InsuredController insuredController = new InsuredController(
+                ui,
+                spravcePojistenych,
+                validator,
+                pojistenecMappingDataProvider);
         insuredController.run();
     }
 }

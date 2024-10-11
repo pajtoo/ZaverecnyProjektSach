@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package cz.itnetwork.evidencepojisteni;
+package cz.itnetwork.evidencepojisteni.dto;
 
 /**
  * Třída reprezentující pojištěnce
@@ -17,6 +17,11 @@ public class PojistenecDTO {
     private String telefon;
     /* Ukládá se v mezinárodním formátu bez mezer. V případě nezadání
     mezinárodní předvolby je automaticky doplněna předvolba +420 */
+
+    /**
+     * No args constructor
+     */
+    public PojistenecDTO(){};
 
     /**
      * Konstruktor pojištěnce

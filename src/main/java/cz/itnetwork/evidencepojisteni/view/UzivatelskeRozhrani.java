@@ -1,6 +1,6 @@
 package cz.itnetwork.evidencepojisteni.view;
 
-import cz.itnetwork.evidencepojisteni.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 
 import java.util.List;
