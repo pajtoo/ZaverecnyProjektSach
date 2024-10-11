@@ -1,47 +1,33 @@
 package cz.itnetwork.evidencepojisteni.mapping;
 
+import cz.itnetwork.evidencepojisteni.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Mapper {
-    private static final Map<String,MappingObject> MAPPING_MAP = new HashMap<String, MappingObject>();
+    // Získá slovník obsahující položky
+    private Map<String,MappingObject> itemsMap;
 
-    static {
-        MAPPING_MAP.put("jmeno", new MappingObject(PopiskyEnum.JMENO, ValidatorVstupu.ValidatorEnum.JMENO));
-        MAPPING_MAP.put("prijmeni", new MappingObject(PopiskyEnum.PRIJMENI, ValidatorVstupu.ValidatorEnum.PRIJMENI));
-        MAPPING_MAP.put("vek", new MappingObject(PopiskyEnum.VEK, ValidatorVstupu.ValidatorEnum.VEK));
-        MAPPING_MAP.put("telefon", new MappingObject(PopiskyEnum.TELEFON, ValidatorVstupu.ValidatorEnum.TELEFON));
+    public Mapper(Class<?> clazz) {
+        this.itemsMap = FieldMap.getFieldMapping(clazz);
     }
 
-    private static Map<String, MappingObject> getMappingMap() {
-        return MAPPING_MAP;
+    public List<PopiskyEnum> getFieldLabels() {
+        return itemsMap.values().stream()
+                .map(MappingObject::getPopisek)
+                .toList();
     }
 
-    /**
-     * Vrací slovník (map) s položkami (atribut, MappingObject) ke každému z atributů přítomných v předané třídě s výjimkou id.
-     * Potřebné k iteraci jednotlivých atributů.
-     * @param clazz Třída, k jejímž atributům potřebujeme získat slovníkové položky.
-     * @return slovník s mapovacími objekty k atributům přítomným v PojištěnecDTO be id
-     */
-    public static Map<String, MappingObject> getFieldMapping(Class<?> clazz) {
-        Field[] atributy = clazz.getFields();
-        Map<String, MappingObject> mapAtributyBezId = new HashMap<>();
-        //cyklu
-        for (int i = 1; i < atributy.length; i++) {
-            for (Map.Entry<String, MappingObject> entry : getMappingMap().entrySet()) {
-                String key = entry.getKey();
-                MappingObject value = entry.getValue();
-                if (atributy[i].getName().equals(key)) {
-                    mapAtributyBezId.put(key, value);
-                    break;
-                }
-            }
-        }
-        return mapAtributyBezId;
+    public List<ValidatorVstupu.ValidatorEnum> getValidatorCriteria() {
+        return itemsMap.values().stream()
+                .map(MappingObject::getValidator)
+                .toList();
     }
+
+
+
 
 }

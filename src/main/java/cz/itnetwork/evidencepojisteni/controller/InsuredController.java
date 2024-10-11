@@ -2,13 +2,13 @@ package cz.itnetwork.evidencepojisteni.controller;
 
 import cz.itnetwork.evidencepojisteni.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.exception.InvalidUserInputException;
-import cz.itnetwork.evidencepojisteni.mapping.MappingObject;
 import cz.itnetwork.evidencepojisteni.mapping.Mapper;
+import cz.itnetwork.evidencepojisteni.mapping.MappingObject;
+import cz.itnetwork.evidencepojisteni.mapping.FieldMap;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
-import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +20,7 @@ public class InsuredController {
     private UzivatelskeRozhrani ui;
     private SpravcePojistenych spravcePojistenych;
     private ValidatorVstupu validator;
+    private Mapper pojistenecMapper = new Mapper(PojistenecDTO.class);
 
     public InsuredController(
             UzivatelskeRozhrani ui,
@@ -73,17 +74,13 @@ public class InsuredController {
     }
 
     private void pridejPojistence() {
-        // Získá slovník obsahující položky
-        Map<String,MappingObject> itemsMap = Mapper.getFieldMapping(PojistenecDTO.class);
-        List<String> zadaneHodnoty = ui.pridejPojistence(
-                itemsMap.values().stream()
-                        .map(MappingObject::getPopisek)
-                        .toList()
-        );
+        // Získá slovník obsahující data k atributům Pojistence
+        java.util.Map<String,MappingObject> itemsMap = FieldMap.getFieldMapping(PojistenecDTO.class);
+        List<String> zadaneHodnoty = ui.pridejPojistence(pojistenecMapper.getFieldLabels());
 
         HashMap<ValidatorEnum, String> vyplnenePolozky = new HashMap<>();
         // namapování ziskaných položek na položky validátoru
-        for (PopiskyEnum polozka : itemsMap) {
+        for (ValidatorEnum FieldCriteria : pojistenecMapper.getValidatorCriteria()) {
             for (String zadanaHodnota : zadaneHodnoty) {
                 vyplnenePolozky.put(
                         itemsMap.values().stream()
@@ -94,6 +91,7 @@ public class InsuredController {
             }       
         }
 
+        //namapování na PojistenecDTO
         List<String> zvalidovanePolozky = new ArrayList<>();
         zadaneHodnoty.forEach((key, value) -> {
             zvalidovanePolozky.add(zajistiValidniVstup(key, value));
