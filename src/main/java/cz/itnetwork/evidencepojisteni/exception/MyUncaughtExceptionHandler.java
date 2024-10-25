@@ -10,6 +10,7 @@ public class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandl
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         log.error("An uncaught exception has occured: ", e);
-        System.out.println("V aplikaci se vyskytla chyba, obraťte se prosím na zákaznickou podporu.");
+        System.out.println("V aplikaci se vyskytla chyba, obraťte se prosím na zákaznickou podporu. ");
+        System.out.println("Aplikace se nyní ukončí. ");
     }
 }
