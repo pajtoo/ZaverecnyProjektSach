@@ -234,7 +234,7 @@ public class ValidatorVstupu {
      * @param vstup Jméno nebo příjmení k validaci
      * @return Validní jméno nebo příjmení ve správném formátu
      */
-    private String zvalidujJmenoPrijmeni(String vstup, ValidatorEnum validatorEnum) {
+    private String zvalidujJmenoPrijmeni(String vstup, ValidatorEnum validatorEnum) throws InvalidUserInputException {
         for (char znak : vstup.toCharArray()) {
             if (!Character.isLetter(znak) && !Character.isSpaceChar(znak)) {
                 throw new InvalidUserInputException("Obsahuje neplatné znaky. ");
