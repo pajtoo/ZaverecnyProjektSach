@@ -2,6 +2,7 @@ package cz.itnetwork.evidencepojisteni.controller;
 
 import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.exception.InvalidUserInputException;
+import cz.itnetwork.evidencepojisteni.mapping.InputDTOMapper;
 import cz.itnetwork.evidencepojisteni.mapping.MappingDataProvider;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
@@ -9,27 +10,29 @@ import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.*;
 
 public class InsuredController {
 
     private static final Logger log = LoggerFactory.getLogger(InsuredController.class);
-    private UzivatelskeRozhrani ui;
-    private SpravcePojistenych spravcePojistenych;
-    private ValidatorVstupu validator;
-    private MappingDataProvider pojistenecMappingDataProvider;
+    private final UzivatelskeRozhrani ui;
+    private final SpravcePojistenych spravcePojistenych;
+    private final ValidatorVstupu validator;
+    private final MappingDataProvider pojistenecMappingDataProvider;
+    private final InputDTOMapper<PojistenecDTO> inputDTOMapper;
 
     public InsuredController(
             UzivatelskeRozhrani ui,
             SpravcePojistenych spravcePojistenych,
             ValidatorVstupu validator,
-            MappingDataProvider pojistenecMappingDataProvider
-            ) {
+            MappingDataProvider pojistenecMappingDataProvider,
+            InputDTOMapper<PojistenecDTO> inputDTOMapper
+    ) {
         this.ui = ui;
         this.spravcePojistenych = spravcePojistenych;
         this.validator = validator;
         this.pojistenecMappingDataProvider = pojistenecMappingDataProvider;
+        this.inputDTOMapper = inputDTOMapper;
     }
 
     public void run() {
@@ -105,20 +108,26 @@ public class InsuredController {
         }
 
         // Namapování na PojistenecDTO
-        PojistenecDTO pojistenecDTO = new PojistenecDTO();
-        PojistenecDTO.class.getConstructor()
+        PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
     }
 
 
 
     private void vypisVyhledanePojistence() {
-        ui.vypis
+        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+    }
+    private void upravPojistence() {
+        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+    }
+
+    private void odstranPojistence() {
+        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
     }
 
     /**
      * Metoda zajistí validaci vstupu od uživatele. Je možné ji volat bez předání vstupu v argumentu. Tato možnost slouží pro
      * případ, že původní předaný vstup není validní a metoda volá samu sebe a sama volá po získání nového vstupu od uživatele.
-     * @param validatorEnum Identifikátor vstupu
+     * @param validatorEnum Identifikátor a parametrizace validace vstupu
      * @param vstupVolitelny Textový vstup - nepovinný argument (zpracuje pouze první položku z pole)
      * @return Validní a standardizovaný vstup
      */
@@ -138,8 +147,12 @@ public class InsuredController {
         return vstup;
     }
 
+    /**
+     * Zaloguje chybu a pošle zprávu uživateli
+     * @param ex Výjimka, která nastala
+     */
     private void zpracujChybnyVstup(Exception ex) {
-        // zpracujVyjimku() TODO: přidat logování, předej obecnému Handleru všech chyb a cele to dat do Exception Handler třídy
+        log.info("An invalid user input has been entered. ", ex);
         ui.vypisChybovouHlasku(ex);
     }
 }
