@@ -9,12 +9,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class MappingDataProvider {
-    private Class clazz;
     // Získá slovník obsahující položky odpovídající atributům v třídě clazz
     private Map<String, MappingObject> itemsMap;
 
     public MappingDataProvider(Class<?> clazz) {
-        this.clazz = clazz;
         this.itemsMap = FieldMap.getFieldMapping(clazz);
     }
 

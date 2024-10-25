@@ -5,6 +5,7 @@ import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FieldMap {
     private static final java.util.Map<String,MappingObject> MAPPING_MAP = new HashMap<String, MappingObject>();
@@ -29,10 +30,10 @@ public class FieldMap {
      */
     public static java.util.Map<String, MappingObject> getFieldMapping(Class<?> clazz) {
         Field[] atributy = clazz.getFields();
-        java.util.Map<String, MappingObject> mapAtributyBezId = new HashMap<>();
+        Map<String, MappingObject> mapAtributyBezId = new HashMap<>();
         //cyklu
         for (int i = 1; i < atributy.length; i++) {
-            for (java.util.Map.Entry<String, MappingObject> entry : getMappingMap().entrySet()) {
+            for (Map.Entry<String, MappingObject> entry : getMappingMap().entrySet()) {
                 String key = entry.getKey();
                 MappingObject value = entry.getValue();
                 if (atributy[i].getName().equals(key)) {
