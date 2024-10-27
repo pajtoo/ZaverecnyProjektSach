@@ -5,6 +5,10 @@
 package cz.itnetwork.evidencepojisteni.service;
 
 import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.mapping.InsuredDTOEntityMapper;
+import cz.itnetwork.evidencepojisteni.persistence.repository.InsuredRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,55 +18,44 @@ import java.util.List;
  *
  * @author Pavel Šach
  */
+@Service
 public class SpravcePojistenychImpl implements SpravcePojistenych {
 
+    private final InsuredRepository insuredRepository;
+    private final InsuredDTOEntityMapper insuredDTOEntityMapper;
+
+    @Autowired
+    public SpravcePojistenychImpl(InsuredRepository insuredRepository, InsuredDTOEntityMapper insuredDTOEntityMapper) {
+        this.insuredRepository = insuredRepository;
+        this.insuredDTOEntityMapper = insuredDTOEntityMapper;
+    }
+
     public List<PojistenecDTO> vratVsechnyPojistene() {
-        //TODO
-    };
+        return insuredRepository.findAll();
+    }
 
     @Override
     public List<PojistenecDTO> najdiPojistene(String jmeno, String prijmeni) {
-        List<PojistenecDTO> vyhledaniPojistenci = new ArrayList<>();
-        for (PojistenecDTO pojisteny : pojistenci) {
-            if (pojisteny.getJmeno().equalsIgnoreCase(jmeno) && pojisteny.getPrijmeni().equalsIgnoreCase(prijmeni)) {
-                vyhledaniPojistenci.add(pojisteny);
-            }
-        }
-        return vyhledaniPojistenci;
+        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
     }
 
     @Override
     public PojistenecDTO najdiPojisteneho(int id) {
-        PojistenecDTO pojistenecDTO = null;
-        for (PojistenecDTO pojisteny : pojistenci) {
-            if (pojisteny.getId() == id) {
-                pojistenecDTO = pojisteny;
-            }
-        }
-        return pojistenecDTO;
+        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
     }
 
     @Override
     public void pridejPojisteneho(String jmeno, String prijmeni, int vek, String telefon) {
-        pojistenci.add(new PojistenecDTO(jmeno, prijmeni, vek, telefon));
+        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
     }
 
     @Override
     public boolean upravPojisteneho(int id, String noveJmeno, String novePrijmeni, int novyVek, String novyTelefon) {
-        for (PojistenecDTO pojistenec : pojistenci) {
-            if (pojistenec.getId() == id) {
-                pojistenec.setJmeno(noveJmeno);
-                pojistenec.setPrijmeni(novePrijmeni);
-                pojistenec.setVek(novyVek);
-                pojistenec.setTelefon(novyTelefon);
-                return true;
-            }
-        }
-        return false;
+        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
     }
 
     @Override
     public boolean odstranPojisteneho(int id) {
-        return pojistenci.remove(najdiPojisteneho(id));
+        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
     }
 }

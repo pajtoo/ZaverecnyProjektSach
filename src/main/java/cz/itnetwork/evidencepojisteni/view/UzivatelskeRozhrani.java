@@ -14,31 +14,45 @@ public interface UzivatelskeRozhrani {
     /**
      * Vypisuje úvodní nabídku, dokud uživatel nezvolí konec programu
      *
-     * @return
      */
     void vypisUvodniNabidku();
 
     /**
-     * Vypíše všechny pojištěnce
+     * Vypíše pojištěnce předané v argumentu
      */
-    void vypisVsechnyPojistence(List<PojistenecDTO> pojistenci);
+    void vypisPojistence(List<PojistenecDTO> pojistenci);
 
     /**
-     * Vypíše pojištěnce odpovídající kritériím
+     * Vypíše rozhraní pro vyhledávání Pojištěného a vyzve k volbě kritéria vyhledávání
+     * @return Číslo (jako String) odpovídající volbě způsobu vyhledávání
      */
-    void vypisVyhledanePojistence();
+    String zahajVyhledavaniPojisteneho();
+
+    /**
+     * Získá hodnoty k jednotlivým parametrům vyhledávání
+     * @param popisky Seznam parametrů vyhledávání
+     * @return Seznam hodnot
+     */
+    List<String> ziskejParametryVyhledavani(List<PopiskyEnum> popisky);
+
+    /**
+     * Každou z položek uvede popiskem a následně si vyžádá zadání příslušné hodnoty.
+     *
+     * @param polozky Položky, jejichž hodnota je požadována
+     * @return Seznam zadaných hodnot
+     */
+    List<String> ziskejHodnotyKPolozkam(List<String> polozky);
 
     /**
      * Přidá nového pojištěnce
      *
-     * @return
      */
-    List<String> pridejPojistence(List<PopiskyEnum> polozky);
+    List<String> pridejPojistence(List<PopiskyEnum> popisky);
 
     /**
      * Upraví pojištěnce se zadaným ID
      */
-    void upravPojistence();
+    List<String> upravPojistence(List<PopiskyEnum> popisky);
 
     /**
      * Odstraní pojištěnce se zadaným ID
@@ -57,10 +71,6 @@ public interface UzivatelskeRozhrani {
      */
     void vypisChybovouHlasku(Exception ex);
 
-    /**
-     * Vypíše popisek charakterizující
-     */
-    void vypisPolozku();
     /**
      * Vyzve uzivatele k zadání textu
      * @return zadaný text

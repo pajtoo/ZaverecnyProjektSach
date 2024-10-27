@@ -13,6 +13,9 @@ import cz.itnetwork.evidencepojisteni.service.SpravcePojistenychImpl;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhraniImpl;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Scanner;
 
@@ -20,25 +23,12 @@ import java.util.Scanner;
  *
  * @author Pavel Šach
  */
+@SpringBootApplication
 public class Main {
-
     public static void main(String[] args) {
+        ConfigurableApplicationContext appContext = SpringApplication.run(Main.class, args);
         Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
-
-        Scanner scanner = new Scanner(System.in, "UTF-8");
-        UzivatelskeRozhrani ui = new UzivatelskeRozhraniImpl(scanner);
-
-        SpravcePojistenych spravcePojistenych = new SpravcePojistenychImpl();
-        ValidatorVstupu validator = new ValidatorVstupu();
-        MappingDataProvider pojistenecMappingDataProvider = new MappingDataProvider(PojistenecDTO.class);
-        InputDTOMapper<PojistenecDTO> insuredInputDTOMapper = new InputDTOMapper<>();
-
-        InsuredController insuredController = new InsuredController(
-                ui,
-                spravcePojistenych,
-                validator,
-                pojistenecMappingDataProvider,
-                insuredInputDTOMapper);
+        InsuredController insuredController = appContext.getBean(InsuredController.class);
         insuredController.run();
     }
 }

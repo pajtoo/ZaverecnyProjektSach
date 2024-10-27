@@ -13,7 +13,7 @@ public class PojistenecDTO {
     private Long id;
     private String jmeno;
     private String prijmeni;
-    private int vek; // maximální věk = 130
+    private Integer vek; // maximální věk = 130
     private String telefon;
     /* Ukládá se v mezinárodním formátu bez mezer. V případě nezadání
     mezinárodní předvolby je automaticky doplněna předvolba +420 */

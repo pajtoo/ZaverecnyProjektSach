@@ -5,6 +5,7 @@
 package cz.itnetwork.evidencepojisteni.validation;
 
 import cz.itnetwork.evidencepojisteni.exception.InvalidUserInputException;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
@@ -13,6 +14,7 @@ import java.util.Arrays;
  *
  * @author Pavel Šach
  */
+@Component
 public class ValidatorVstupu {
 
     /**
@@ -24,9 +26,8 @@ public class ValidatorVstupu {
          * Křestní jméno
          */
         JMENO(
-            true,
-            null,
-            null,
+            2,
+            30,
             ParametryValidaceEnum.TEXT_ODSTRAN_PREBYTECNE_MEZERY,
             ParametryValidaceEnum.VLASTNI_JMENO_DEJ_VELKE_PISMENO
         ),
@@ -34,9 +35,8 @@ public class ValidatorVstupu {
          * Příjmení
          */
         PRIJMENI(
-            true,
-            null,
-            null,
+            2,
+            30,
             ParametryValidaceEnum.TEXT_ODSTRAN_PREBYTECNE_MEZERY,
             ParametryValidaceEnum.VLASTNI_JMENO_DEJ_VELKE_PISMENO
         ),
@@ -44,7 +44,6 @@ public class ValidatorVstupu {
          * Telefon
          */
         TELEFON(
-            true,
             6,
             15,
             ParametryValidaceEnum.TELEFON_DOPLN_MEZINARODNI_PREDVOLBU
@@ -53,37 +52,32 @@ public class ValidatorVstupu {
          * Věk
          */
         VEK(
-            true,
             0,
             130
         ),
 
         VOLBA_AKCE_V_MENU(
-            true,
-            null,
-            null
+            1,
+            6
+        ),
+
+        VOLBA_ZPUSOBU_VYHLEDAVANI(
+            1,
+            2
         );
 
-
-        private final boolean povinny;
         private final Integer min;
         private final Integer max;
         private final ParametryValidaceEnum[] parametryValidace;
 
         ValidatorEnum(
-                boolean povinny,
                 Integer min,
                 Integer max,
                 ParametryValidaceEnum... parametryValidaceEnum
         ) {
-            this.povinny = povinny;
             this.min = min;
             this.max = max;
             this.parametryValidace = parametryValidaceEnum;
-        }
-
-        private boolean jePovinny() {
-            return povinny;
         }
 
         private Integer getMin() {
@@ -124,7 +118,7 @@ public class ValidatorVstupu {
      * @param validatorEnum Identifikátor položky pro správné zpracování příslušné položky validátorem
      * @return Validní, standardizovaný vstup
      */
-    public String zvaliduj(ValidatorEnum validatorEnum, String vstup) throws InvalidUserInputException, NumberFormatException {
+    public String zvaliduj(ValidatorEnum validatorEnum, boolean jePovinny, String vstup) throws InvalidUserInputException, NumberFormatException {
         vstup = vstup.trim();
 
         boolean isText = false;
@@ -138,10 +132,11 @@ public class ValidatorVstupu {
         ) isText = true;
         if (
                 validatorEnum.toString().equals(ValidatorEnum.VEK.toString()) ||
-                validatorEnum.toString().equals(ValidatorEnum.VOLBA_AKCE_V_MENU.toString())
+                validatorEnum.toString().equals(ValidatorEnum.VOLBA_AKCE_V_MENU.toString()) ||
+                validatorEnum.toString().equals(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI.toString())
         ) isNumber = true;
 
-        if (vstup.isEmpty() && validatorEnum.jePovinny()) {
+        if (vstup.isEmpty() && jePovinny) {
             throw new InvalidUserInputException("Pole nemůže být prázdné. ");
         }
         // Pokud je vstup prázdný a není povinný, jedná se o editaci položky a data se za této podmínky nemění

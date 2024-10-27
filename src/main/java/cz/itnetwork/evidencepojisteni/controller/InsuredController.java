@@ -8,6 +8,8 @@ import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
+import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
+import cz.itnetwork.evidencepojisteni.view.enums.ZpravyOVysledkuOperaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;
@@ -45,14 +47,14 @@ public class InsuredController {
         boolean isKonec = false;
         while (!isKonec) {
             ui.vypisUvodniNabidku();
-            int volba = Integer.parseInt(zajistiValidniVstup(ValidatorEnum.VOLBA_AKCE_V_MENU));
+            int volba = Integer.parseInt(zajistiValidniVstup(ValidatorEnum.VOLBA_AKCE_V_MENU, true));
 
             switch (volba) {
                 case 1:
                     vypisVsechnyPojistence();
                     break;
                 case 2:
-                    vypisVyhledanePojistence();
+                    vyhledejPojistence();
                     break;
                 case 3:
                     pridejPojistence();
@@ -73,7 +75,7 @@ public class InsuredController {
 
     private void vypisVsechnyPojistence() {
         List<PojistenecDTO> pojistenci = spravcePojistenych.vratVsechnyPojistene();
-        ui.vypisVsechnyPojistence(pojistenci);
+        ui.vypisPojistence(pojistenci);
     }
 
     private void pridejPojistence() {
@@ -94,7 +96,7 @@ public class InsuredController {
         // Validace dat
         List<String> zvalidovaneHodnoty = new ArrayList<>();
         hodnotyKValidaci.forEach((key, value) -> {
-            zvalidovaneHodnoty.add(zajistiValidniVstup(key, value));
+            zvalidovaneHodnoty.add(zajistiValidniVstup(key, true, value));
         });
         // Seznam atributů
         List<String> seznamAtributu = pojistenecMappingDataProvider.getFieldNames();
@@ -109,12 +111,34 @@ public class InsuredController {
 
         // Namapování na PojistenecDTO
         PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
+        try {
+            //TODO: volání správce a databáze + upřesnění Exception v catch
+            ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message);
+        } catch (Exception ex) {
+
+        }
+
     }
 
+    private void vyhledejPojistence() {
+        ui.zahajVyhledavaniPojisteneho();
+        int volba = Integer.parseInt(zajistiValidniVstup(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI, true));
+        List<String> parametryVyhledavani = new ArrayList<>();
+        switch (volba) {
+            case 1:
+                parametryVyhledavani = ui.ziskejParametryVyhledavani(pojistenecMappingDataProvider.getFieldLabels());
+                break;
+            case 2:
+                List<String> popisky = new ArrayList<>();
+                popisky.add("ID: ");
+                parametryVyhledavani = ui.ziskejHodnotyKPolozkam(popisky);
+                break;
+        }
 
 
-    private void vypisVyhledanePojistence() {
-        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+
+
+        ui.vypisPojistence(null);
     }
     private void upravPojistence() {
         throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
@@ -131,18 +155,18 @@ public class InsuredController {
      * @param vstupVolitelny Textový vstup - nepovinný argument (zpracuje pouze první položku z pole)
      * @return Validní a standardizovaný vstup
      */
-    private String zajistiValidniVstup(ValidatorEnum validatorEnum, String... vstupVolitelny) {
+    private String zajistiValidniVstup(ValidatorEnum validatorEnum, boolean jePovinny, String... vstupVolitelny) {
         String vstup;
         if (vstupVolitelny.length > 0) {
             vstup = vstupVolitelny[0];
         } else
             vstup = ui.ziskejVstup();
         try {
-            vstup = validator.zvaliduj(validatorEnum, vstup);
+            vstup = validator.zvaliduj(validatorEnum, jePovinny, vstup);
         } catch (InvalidUserInputException | NumberFormatException ex) {
             zpracujChybnyVstup(ex);
             ui.vyzviKOpakovaniZadani();
-            return zajistiValidniVstup(validatorEnum, vstup);
+            return zajistiValidniVstup(validatorEnum, jePovinny, vstup);
         }
         return vstup;
     }

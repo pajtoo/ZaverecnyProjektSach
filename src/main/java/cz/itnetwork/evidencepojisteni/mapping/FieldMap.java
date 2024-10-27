@@ -26,7 +26,7 @@ public class FieldMap {
      * Vrací slovník (map) s položkami (atribut, MappingObject) ke každému z atributů přítomných v předané třídě s výjimkou id.
      * Potřebné k iteraci jednotlivých atributů.
      * @param clazz Třída, k jejímž atributům potřebujeme získat slovníkové položky.
-     * @return slovník s mapovacími objekty k atributům přítomným v PojištěnecDTO be id
+     * @return slovník s mapovacími objekty k atributům přítomným v PojištěnecDTO bez id
      */
     public static java.util.Map<String, MappingObject> getFieldMapping(Class<?> clazz) {
         Field[] atributy = clazz.getFields();
