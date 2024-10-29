@@ -16,6 +16,16 @@ public class InsuredEntity {
     private int vek; // maximální věk = 130
     private String telefon;
 
+    public InsuredEntity() {};
+
+    public InsuredEntity(Long id, String jmeno, String prijmeni, String telefon, int vek) {
+        this.id = id;
+        this.jmeno = jmeno;
+        this.prijmeni = prijmeni;
+        this.telefon = telefon;
+        this.vek = vek;
+    }
+
     public Long getId() {
         return id;
     }

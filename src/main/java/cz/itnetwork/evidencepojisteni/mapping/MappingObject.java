@@ -6,8 +6,8 @@ import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 public class MappingObject {
 
     public MappingObject(
-        PopiskyEnum popisek,
-        ValidatorEnum validator
+            PopiskyEnum popisek,
+            ValidatorEnum validator
     ) {
         this.popisek = popisek;
         this.validator = validator;
@@ -19,6 +19,7 @@ public class MappingObject {
     public PopiskyEnum getPopisek() {
         return popisek;
     }
+
     public ValidatorEnum getValidator() {
         return validator;
     }

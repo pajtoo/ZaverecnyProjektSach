@@ -32,12 +32,9 @@ public interface SpravcePojistenych {
     /**
      * Vytvoří nového pojištěného
      *
-     * @param jmeno    Jméno
-     * @param prijmeni Příjmení
-     * @param vek      Věk
-     * @param telefon  Telefonní číslo
+     * @param pojistenec Pojištěnec
      */
-    void pridejPojisteneho(String jmeno, String prijmeni, int vek, String telefon);
+    PojistenecDTO pridejPojisteneho(PojistenecDTO pojistenec);
 
     /**
      * Upraví atributy pojištěného s určitým id

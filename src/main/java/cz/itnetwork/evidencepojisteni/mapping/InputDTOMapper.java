@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Map;
 
-@Component
 public class InputDTOMapper<T> {
 
     /**
@@ -24,7 +23,7 @@ public class InputDTOMapper<T> {
                     .filter(metoda ->
                             // Získání setterů s výjimkou setId
                             metoda.getName().startsWith("set") &&
-                                    !metoda.getName().equalsIgnoreCase("setId")
+                            !metoda.getName().equalsIgnoreCase("setId")
                     ).forEach(metoda -> {
                         // Mapování
                         String setterFor = metoda.getName().substring(3);

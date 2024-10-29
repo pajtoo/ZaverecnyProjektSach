@@ -8,15 +8,17 @@ import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
-import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 import cz.itnetwork.evidencepojisteni.view.enums.ZpravyOVysledkuOperaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import java.util.*;
 
+@Component
 public class InsuredController {
 
-    private static final Logger log = LoggerFactory.getLogger(InsuredController.class);
+    private static final Logger logger = LoggerFactory.getLogger(InsuredController.class);
     private final UzivatelskeRozhrani ui;
     private final SpravcePojistenych spravcePojistenych;
     private final ValidatorVstupu validator;
@@ -83,7 +85,7 @@ public class InsuredController {
         List<String> zadaneHodnoty = ui.pridejPojistence(pojistenecMappingDataProvider.getFieldLabels());
 
         // Příprava vstupních dat pro validátor
-        HashMap<ValidatorEnum, String> hodnotyKValidaci = new HashMap<>();
+        LinkedHashMap<ValidatorEnum, String> hodnotyKValidaci = new LinkedHashMap<>();
         for (ValidatorEnum fieldCriteria : pojistenecMappingDataProvider.getValidatorCriteria()) {
             for (String zadanaHodnota : zadaneHodnoty) {
                 hodnotyKValidaci.put(
@@ -112,10 +114,10 @@ public class InsuredController {
         // Namapování na PojistenecDTO
         PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
         try {
-            //TODO: volání správce a databáze + upřesnění Exception v catch
+            spravcePojistenych.pridejPojisteneho(pojistenecDTO);
             ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message);
         } catch (Exception ex) {
-
+            //TODO: upřesnění Exception v catch
         }
 
     }
@@ -166,7 +168,7 @@ public class InsuredController {
         } catch (InvalidUserInputException | NumberFormatException ex) {
             zpracujChybnyVstup(ex);
             ui.vyzviKOpakovaniZadani();
-            return zajistiValidniVstup(validatorEnum, jePovinny, vstup);
+            return zajistiValidniVstup(validatorEnum, jePovinny);
         }
         return vstup;
     }
@@ -176,7 +178,7 @@ public class InsuredController {
      * @param ex Výjimka, která nastala
      */
     private void zpracujChybnyVstup(Exception ex) {
-        log.info("An invalid user input has been entered. ", ex);
+        //log.info("An invalid user input has been entered. ", ex);
         ui.vypisChybovouHlasku(ex);
     }
 }

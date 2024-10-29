@@ -80,15 +80,15 @@ public class ValidatorVstupu {
             this.parametryValidace = parametryValidaceEnum;
         }
 
-        private Integer getMin() {
+        public Integer getMin() {
             return min;
         }
 
-        private Integer getMax() {
+        public Integer getMax() {
             return max;
         }
 
-        private ParametryValidaceEnum[] getParametryValidace() {
+        public ParametryValidaceEnum[] getParametryValidace() {
             return parametryValidace;
         }
 
@@ -113,7 +113,7 @@ public class ValidatorVstupu {
     }
 
     /**
-     * Univerzální metoda k validaci uživatelského vstupu, jejíž funkce se parametrizuje prostřednictvím parametrů.
+     * Univerzální metoda k validaci uživatelského vstupu, jejíž funkce se parametrizuje prostřednictvím předaných parametrů.
      * @param vstup Vstup k validaci
      * @param validatorEnum Identifikátor položky pro správné zpracování příslušné položky validátorem
      * @return Validní, standardizovaný vstup
@@ -130,7 +130,7 @@ public class ValidatorVstupu {
                 validatorEnum.toString().equals(ValidatorEnum.PRIJMENI.toString()) ||
                 validatorEnum.toString().equals(ValidatorEnum.TELEFON.toString())
         ) isText = true;
-        if (
+        else if (
                 validatorEnum.toString().equals(ValidatorEnum.VEK.toString()) ||
                 validatorEnum.toString().equals(ValidatorEnum.VOLBA_AKCE_V_MENU.toString()) ||
                 validatorEnum.toString().equals(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI.toString())
@@ -140,7 +140,7 @@ public class ValidatorVstupu {
             throw new InvalidUserInputException("Pole nemůže být prázdné. ");
         }
         // Pokud je vstup prázdný a není povinný, jedná se o editaci položky a data se za této podmínky nemění
-        if (vstup.isEmpty()) {
+        else if (vstup.isEmpty()) {
             return vstup;
         }
 
@@ -151,13 +151,18 @@ public class ValidatorVstupu {
                     vstup = zvalidujTelefon(vstup, validatorEnum);
                 }
                 // Validace, standardizace jména, příjmení
-                if (validatorEnum.toString().equals(ValidatorEnum.TELEFON.toString())) {
+                else if (
+                    validatorEnum.toString().equals(ValidatorEnum.JMENO.toString()) ||
+                    validatorEnum.toString().equals(ValidatorEnum.PRIJMENI.toString())
+                ) {
                     vstup = zvalidujJmenoPrijmeni(vstup, validatorEnum);
                 }
                 // Validace délky textu
                 int minimalniDelka;
                 int maximalniDelka;
-                if (validatorEnum.getMin() != null) {
+                if (validatorEnum.getMin() < 0) {
+                    minimalniDelka = 1;
+                } else if (validatorEnum.getMin() != null) {
                     minimalniDelka = validatorEnum.getMin();
                 } else minimalniDelka = 1;
                 if (validatorEnum.getMax() != null) {
@@ -169,21 +174,23 @@ public class ValidatorVstupu {
                 ) {
                     throw new InvalidUserInputException("Neplatná délka textu. Váš text musí mít délku minimálně " + validatorEnum.getMin() + " a maximálně " + validatorEnum.getMax() + " znaků. ");
                 }
-            return vstup;
+                return vstup;
         }
         // Validace čísla
-        if (isNumber) {
-            int vstupCislo;
-            try {
-                vstupCislo = Integer.parseInt(vstup);
-            } catch (NumberFormatException ex) {
-                throw new NumberFormatException("Nezadali jste platné číslo.");
-            }
-            if (vstupCislo < validatorEnum.getMin() && vstupCislo > validatorEnum.getMax())
-                throw new InvalidUserInputException("Neplatný věk. Lze zadat pouze hodnotu od " + validatorEnum.getMin() + " do " + validatorEnum.getMax() + ". ");
-            return vstup;
+        else if (isNumber) {
+                int vstupCislo;
+                try {
+                    vstupCislo = Integer.parseInt(vstup);
+                } catch (NumberFormatException ex) {
+                    throw new NumberFormatException("Nezadali jste platné číslo.");
+                }
+                if (vstupCislo < validatorEnum.getMin() && vstupCislo > validatorEnum.getMax())
+                    throw new InvalidUserInputException("Neplatný věk. Lze zadat pouze hodnotu od " + validatorEnum.getMin() + " do " + validatorEnum.getMax() + ". ");
+                return vstup;
         }
-        return vstup;
+        else {
+            throw new RuntimeException("Chyba validátoru. Datový typ není validátorem podporován");
+        }
     }
 
     /**

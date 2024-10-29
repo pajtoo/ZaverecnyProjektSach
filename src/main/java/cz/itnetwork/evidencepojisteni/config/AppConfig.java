@@ -3,8 +3,6 @@ package cz.itnetwork.evidencepojisteni.config;
 import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.mapping.InputDTOMapper;
 import cz.itnetwork.evidencepojisteni.mapping.MappingDataProvider;
-import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
-import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhraniImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

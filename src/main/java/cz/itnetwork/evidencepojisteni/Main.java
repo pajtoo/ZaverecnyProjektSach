@@ -4,20 +4,10 @@
 package cz.itnetwork.evidencepojisteni;
 
 import cz.itnetwork.evidencepojisteni.controller.InsuredController;
-import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.exception.MyUncaughtExceptionHandler;
-import cz.itnetwork.evidencepojisteni.mapping.InputDTOMapper;
-import cz.itnetwork.evidencepojisteni.mapping.MappingDataProvider;
-import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
-import cz.itnetwork.evidencepojisteni.service.SpravcePojistenychImpl;
-import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
-import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
-import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhraniImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-
-import java.util.Scanner;
 
 /**
  *

@@ -6,6 +6,7 @@ package cz.itnetwork.evidencepojisteni.service;
 
 import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.mapping.InsuredDTOEntityMapper;
+import cz.itnetwork.evidencepojisteni.persistence.entity.InsuredEntity;
 import cz.itnetwork.evidencepojisteni.persistence.repository.InsuredRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,12 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     }
 
     public List<PojistenecDTO> vratVsechnyPojistene() {
-        return insuredRepository.findAll();
+        List<PojistenecDTO> pojistenci = new ArrayList<>();
+        insuredRepository.findAll()
+                .forEach(pojistenec -> {
+                    pojistenci.add(insuredDTOEntityMapper.toDTO(pojistenec));
+                });
+        return pojistenci;
     }
 
     @Override
@@ -45,8 +51,9 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     }
 
     @Override
-    public void pridejPojisteneho(String jmeno, String prijmeni, int vek, String telefon) {
-        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+    public PojistenecDTO pridejPojisteneho(PojistenecDTO pojistenec) {
+        InsuredEntity insuredEntity = insuredRepository.save(insuredDTOEntityMapper.toEntity(pojistenec));
+        return insuredDTOEntityMapper.toDTO(insuredEntity);
     }
 
     @Override

@@ -3,14 +3,11 @@ package cz.itnetwork.evidencepojisteni.mapping;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class MappingDataProvider {
     // Získá slovník obsahující položky odpovídající atributům v třídě clazz
-    private Map<String, MappingObject> itemsMap;
+    private final LinkedHashMap<String, MappingObject> itemsMap;
 
     public MappingDataProvider(Class<?> clazz) {
         this.itemsMap = FieldMap.getFieldMapping(clazz);

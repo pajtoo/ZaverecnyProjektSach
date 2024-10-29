@@ -4,7 +4,7 @@ import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.persistence.entity.InsuredEntity;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface InsuredDTOEntityMapper {
 
     PojistenecDTO toDTO(InsuredEntity insuredEntity);
