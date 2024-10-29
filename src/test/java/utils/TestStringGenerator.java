@@ -1,54 +1,53 @@
 package utils;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class TestStringGenerator {
 
-    public LinkedHashMap<String, String> generateValidValues(int minLength, int maxLength) {
-        LinkedHashMap<String, Integer> validLengths = new LinkedHashMap<>();
+    public List<String> generateValidStrings(int minLength, int maxLength, char fillerCharacter) {
+        List<Integer> validLengths = new ArrayList<>();
 
         if (minLength < 1) {
            minLength = 1;
         }
-        validLengths.put("min", minLength);
-        validLengths.put("min+1", minLength + 1);
-        validLengths.put("mid", (maxLength - minLength) / 2);
-        validLengths.put("max-1", maxLength - 1);
-        validLengths.put("max", maxLength);
+        validLengths.add(minLength);
+        validLengths.add(minLength + 1);
+        validLengths.add((maxLength + minLength) / 2);
+        validLengths.add(maxLength - 1);
+        validLengths.add(maxLength);
 
-        return getLengthRelatedStrings(validLengths);
+        return getLengthRelatedStrings(validLengths, fillerCharacter);
     }
 
-    public LinkedHashMap<String, String> generateInvalidValues(int minLength, int maxLength) {
-        LinkedHashMap<String, Integer> invalidLengths = new LinkedHashMap<>();
+    public List<String> generateInvalidStrings(int minLength, int maxLength, char fillerCharacter) {
+        List<Integer> invalidLengths = new ArrayList<>();
 
         if (minLength < 1) {
             minLength = 1;
         }
 
-        invalidLengths.put("min-1", minLength - 1);
-        invalidLengths.put("max+1", maxLength + 1);
+        invalidLengths.add(minLength - 1);
+        invalidLengths.add(maxLength + 1);
 
-        return getLengthRelatedStrings(invalidLengths);
+        return getLengthRelatedStrings(invalidLengths, fillerCharacter);
     }
 
     /**
      * Vrátí Stringy o délce specifikované v předaném parametru
-     * @param stringLengths Specifikace délek Stringů
+     *
+     * @param stringLengths   Specifikace délek Stringů
+     * @param fillerCharacter Znak, kterým se String vyplní v požadované délce
      * @return Stringy vygenerované podle specifikace
      */
-    private LinkedHashMap<String, String> getLengthRelatedStrings(LinkedHashMap<String, Integer> stringLengths) {
-        LinkedHashMap<String, String> relatedStrings = new LinkedHashMap<>();
-        List<String> relatedStringKeys = new ArrayList<>(stringLengths.keySet());
-        List<Integer> relatedStringLengths = new ArrayList<>(stringLengths.values());
+    private List<String> getLengthRelatedStrings(List<Integer> stringLengths, char fillerCharacter) {
+        List<String> relatedStrings = new ArrayList<>();
 
         for (int i = 0; i < stringLengths.size(); i++) {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.repeat("a", relatedStringLengths.get(i));
+            stringBuilder.repeat(fillerCharacter, stringLengths.get(i));
             String relatedString = stringBuilder.toString();
-            relatedStrings.put(relatedStringKeys.get(i), relatedString);
+            relatedStrings.add(relatedString);
         }
         return relatedStrings;
     }

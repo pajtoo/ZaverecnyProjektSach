@@ -45,7 +45,7 @@ public class ValidatorVstupu {
          */
         TELEFON(
             6,
-            15,
+            16, // Počet znaků včetně znaménka "+"
             ParametryValidaceEnum.TELEFON_DOPLN_MEZINARODNI_PREDVOLBU
         ),
         /**
@@ -66,13 +66,13 @@ public class ValidatorVstupu {
             2
         );
 
-        private final Integer min;
-        private final Integer max;
+        private final int min;
+        private final int max;
         private final ParametryValidaceEnum[] parametryValidace;
 
         ValidatorEnum(
-                Integer min,
-                Integer max,
+                int min,
+                int max,
                 ParametryValidaceEnum... parametryValidaceEnum
         ) {
             this.min = min;
@@ -80,11 +80,11 @@ public class ValidatorVstupu {
             this.parametryValidace = parametryValidaceEnum;
         }
 
-        public Integer getMin() {
+        public int getMin() {
             return min;
         }
 
-        public Integer getMax() {
+        public int getMax() {
             return max;
         }
 
@@ -149,9 +149,10 @@ public class ValidatorVstupu {
                 // Validace, standardizace telefonu
                 if (validatorEnum.toString().equals(ValidatorEnum.TELEFON.toString())) {
                     vstup = zvalidujTelefon(vstup, validatorEnum);
+                    return vstup;
                 }
                 // Validace, standardizace jména, příjmení
-                else if (
+                if (
                     validatorEnum.toString().equals(ValidatorEnum.JMENO.toString()) ||
                     validatorEnum.toString().equals(ValidatorEnum.PRIJMENI.toString())
                 ) {
@@ -159,15 +160,12 @@ public class ValidatorVstupu {
                 }
                 // Validace délky textu
                 int minimalniDelka;
-                int maximalniDelka;
-                if (validatorEnum.getMin() < 0) {
+                int maximalniDelka = validatorEnum.getMax();
+                if (validatorEnum.getMin() <= 0) {
                     minimalniDelka = 1;
-                } else if (validatorEnum.getMin() != null) {
+                } else {
                     minimalniDelka = validatorEnum.getMin();
-                } else minimalniDelka = 1;
-                if (validatorEnum.getMax() != null) {
-                    maximalniDelka = validatorEnum.getMax();
-                } else maximalniDelka = 10000;
+                }
                 if (
                         vstup.length() < minimalniDelka ||
                         vstup.length() > maximalniDelka
@@ -185,7 +183,7 @@ public class ValidatorVstupu {
                     throw new NumberFormatException("Nezadali jste platné číslo.");
                 }
                 if (vstupCislo < validatorEnum.getMin() && vstupCislo > validatorEnum.getMax())
-                    throw new InvalidUserInputException("Neplatný věk. Lze zadat pouze hodnotu od " + validatorEnum.getMin() + " do " + validatorEnum.getMax() + ". ");
+                    throw new InvalidUserInputException("Neplatná hodnota. Lze zadat pouze hodnotu od " + validatorEnum.getMin() + " do " + validatorEnum.getMax() + ". ");
                 return vstup;
         }
         else {
@@ -202,9 +200,12 @@ public class ValidatorVstupu {
     private String zvalidujTelefon(String vstup, ValidatorEnum validatorEnum) throws InvalidUserInputException {
         //odstraní mezery uvnitř telefonního čísla
         vstup = vstup.replaceAll("\\s", "");
+        // nahrazuje případné dvě nuly u mezinárodní předvolby znaménkem "+"
+        if (vstup.charAt(0) == '0' && vstup.charAt(1) == '0') {
+            vstup = "+" + vstup.substring(2);
+        }
         // zjišťuje, zda má číslo mezinárodní předvolbu
-        boolean maMezinarodniPredvolbu = vstup.charAt(0) == '+' || (vstup.charAt(0) == '0' && vstup.charAt(1) == '0');
-
+        boolean maMezinarodniPredvolbu = vstup.charAt(0) == '+';
         // ověřuje platnost prvního znaku
         boolean prvniZnakJePlatny = maMezinarodniPredvolbu || Character.isDigit(vstup.charAt(0));
         // ověřuje platnost ostatních znaků
@@ -215,7 +216,13 @@ public class ValidatorVstupu {
             }
         }
         // ověřuje platnost délky čísla
-        boolean delkaCislaJeValidni = vstup.length() >= validatorEnum.getMin() && vstup.length() <= validatorEnum.getMax();
+        boolean delkaCislaJeValidni = false;
+        if (
+                (maMezinarodniPredvolbu && vstup.length() >= validatorEnum.getMin() && vstup.length() <= validatorEnum.getMax()) ||
+                (!maMezinarodniPredvolbu && vstup.length() >= validatorEnum.getMin() && vstup.length() <= validatorEnum.getMax() - 4)
+        ) {
+            delkaCislaJeValidni = true;
+        }
         // Pokud je vše v pořádku, vrací se standardizovaná hodnota
         if (prvniZnakJePlatny && ostatniZnakyJsouPlatne && delkaCislaJeValidni) {
             if (
