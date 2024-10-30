@@ -84,35 +84,18 @@ public class InsuredController {
         // Získání dat z uživatelského vstupu
         List<String> zadaneHodnoty = ui.pridejPojistence(pojistenecMappingDataProvider.getFieldLabels());
 
-        // Příprava vstupních dat pro validátor
-        LinkedHashMap<ValidatorEnum, String> hodnotyKValidaci = new LinkedHashMap<>();
-        for (ValidatorEnum fieldCriteria : pojistenecMappingDataProvider.getValidatorCriteria()) {
-            for (String zadanaHodnota : zadaneHodnoty) {
-                hodnotyKValidaci.put(
-                    fieldCriteria,
-                    zadanaHodnota
-                );
-            }       
-        }
-
         // Validace dat
+        LinkedHashMap<ValidatorEnum, String> hodnotyKValidaci = getValidatorArgumentObject(zadaneHodnoty);
         List<String> zvalidovaneHodnoty = new ArrayList<>();
         hodnotyKValidaci.forEach((key, value) -> {
             zvalidovaneHodnoty.add(zajistiValidniVstup(key, true, value));
         });
-        // Seznam atributů
-        List<String> seznamAtributu = pojistenecMappingDataProvider.getFieldNames();
-        //Příprava slovníku pro InputDTOMapper
-        Map<String, String> validniPolozky= new HashMap<>();
-        for (int i = 0; i < zvalidovaneHodnoty.size(); i++) {
-            validniPolozky.put(
-                    seznamAtributu.get(i),
-                    zvalidovaneHodnoty.get(i)
-            );
-        }
 
         // Namapování na PojistenecDTO
+        Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
         PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
+
+        // Uložení do databáze
         try {
             spravcePojistenych.pridejPojisteneho(pojistenecDTO);
             ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message);
@@ -128,7 +111,7 @@ public class InsuredController {
         List<String> parametryVyhledavani = new ArrayList<>();
         switch (volba) {
             case 1:
-                parametryVyhledavani = ui.ziskejParametryVyhledavani(pojistenecMappingDataProvider.getFieldLabels());
+                // parametryVyhledavani = ui.ziskejHondotyKPolozkam(pojistenecMappingDataProvider.getFieldLabels());
                 break;
             case 2:
                 List<String> popisky = new ArrayList<>();
@@ -136,9 +119,6 @@ public class InsuredController {
                 parametryVyhledavani = ui.ziskejHodnotyKPolozkam(popisky);
                 break;
         }
-
-
-
 
         ui.vypisPojistence(null);
     }
@@ -180,5 +160,32 @@ public class InsuredController {
     private void zpracujChybnyVstup(Exception ex) {
         //log.info("An invalid user input has been entered. ", ex);
         ui.vypisChybovouHlasku(ex);
+    }
+
+    private Map<String, String> getMapperArgumentObject(List<String> zvalidovaneHodnoty) {
+        // Seznam atributů
+        List<String> seznamAtributu = pojistenecMappingDataProvider.getFieldNames();
+        //Příprava slovníku pro InputDTOMapper
+        Map<String, String> validniPolozky= new HashMap<>();
+        for (int i = 0; i < zvalidovaneHodnoty.size(); i++) {
+            validniPolozky.put(
+                    seznamAtributu.get(i),
+                    zvalidovaneHodnoty.get(i)
+            );
+        }
+        return validniPolozky;
+    }
+
+    private LinkedHashMap<ValidatorEnum, String> getValidatorArgumentObject(List<String> zadaneHodnoty) {
+        LinkedHashMap<ValidatorEnum, String> hodnotyKValidaci = new LinkedHashMap<>();
+        for (ValidatorEnum fieldCriteria : pojistenecMappingDataProvider.getValidatorCriteria()) {
+            for (String zadanaHodnota : zadaneHodnoty) {
+                hodnotyKValidaci.put(
+                        fieldCriteria,
+                        zadanaHodnota
+                );
+            }
+        }
+        return hodnotyKValidaci;
     }
 }

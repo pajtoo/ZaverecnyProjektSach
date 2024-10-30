@@ -66,7 +66,9 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
             vypisZpravu(ZpravyOVysledkuOperaceEnum.ITEMS_NOT_FOUND.message);
         }
     }
-    
+
+
+
     @Override
     public String zahajVyhledavaniPojisteneho() {
         System.out.println("----- Vyhledávání pojištěných -----");
@@ -82,6 +84,23 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
         // Extrakce základní varianty popisku
         popisky.forEach(popisek -> polozky.add(popisek.popisek));
         return ziskejHodnotyKPolozkam(polozky);
+    }
+
+    /**
+     * Každou z položek uvede popiskem a následně si vyžádá zadání příslušné hodnoty.
+     *
+     * @param polozky Popisky položek, jejichž hodnota je požadována
+     * @return Seznam zadaných hodnot
+     */
+    @Override
+    public List<String> ziskejHodnotyKPolozkam(List<String> polozky) {
+        System.out.println("Zadejte údaje: ");
+        List<String> zadaneHodnoty = new ArrayList<>();
+        for (String polozka : polozky) {
+            System.out.print(polozka);
+            zadaneHodnoty.add(scanner.nextLine());
+        }
+        return zadaneHodnoty;
     }
 
     @Override
@@ -119,23 +138,6 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
             vypisZpravu(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message);
         }
 */
-    }
-
-    /**
-     * Každou z položek uvede popiskem a následně si vyžádá zadání příslušné hodnoty.
-     *
-     * @param polozky Položky, jejichž hodnota je požadována
-     * @return Seznam zadaných hodnot
-     */
-    @Override
-    public List<String> ziskejHodnotyKPolozkam(List<String> polozky) {
-        System.out.println("Zadejte údaje: ");
-        List<String> zadaneHodnoty = new ArrayList<>();
-        for (String polozka : polozky) {
-            System.out.print(polozka);
-            zadaneHodnoty.add(scanner.nextLine());
-        }
-        return zadaneHodnoty;
     }
 
     @Override

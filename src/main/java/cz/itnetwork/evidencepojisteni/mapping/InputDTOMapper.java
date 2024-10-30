@@ -1,9 +1,8 @@
 package cz.itnetwork.evidencepojisteni.mapping;
 
-import org.springframework.stereotype.Component;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -62,5 +61,40 @@ public class InputDTOMapper<T> {
                 return Double.parseDouble(value);
             }
             throw new IllegalArgumentException("Unsupported parameter type: " + targetType);
+    }
+
+    public T updateDTO(T dtoToUpdate, Map<String, String> polozky) {
+       for (Map.Entry<String, String> polozka : polozky.entrySet()) {
+            if (polozka.getValue().isBlank()) {
+                polozky.remove(polozka.getKey());
+            }
+
+        Arrays.stream(dtoToUpdate.getClass().getMethods())
+                .filter(metoda ->
+                        // Získání setterů s výjimkou setId
+                        metoda.getName().startsWith("set") &&
+                        !metoda.getName().equalsIgnoreCase("setId")
+                ).filter(metoda ->
+                        !polozky.containsKey(metoda.getName().substring(3))
+                ).forEach(metoda -> {
+                    String setterFor = metoda.getName().substring(3);
+                    Class<?> targetType = metoda.getParameterTypes()[0];
+                    String respectiveFieldValue = "";
+                    for (Map.Entry<String, String> upravovanaPolozka : polozky.entrySet()) {
+                        if (upravovanaPolozka.getKey().equalsIgnoreCase(setterFor)) {
+                            respectiveFieldValue = upravovanaPolozka.getValue();
+                            break;
+                        }
+                    }
+                    // Převod na příslušný datový typ
+                    Object convertedValue = convertValueType(respectiveFieldValue, targetType);
+                    try {
+                        metoda.invoke(dtoToUpdate, convertedValue);
+                    } catch (IllegalAccessException | InvocationTargetException ex) {
+                        throw new RuntimeException("An exception occured during invoking DTO setters.", ex);
+                    }
+                });
+        }
+        return dtoToUpdate;
     }
 }

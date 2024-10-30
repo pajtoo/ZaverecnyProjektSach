@@ -72,8 +72,8 @@ public interface UzivatelskeRozhrani {
     void vypisChybovouHlasku(Exception ex);
 
     /**
-     * Vyzve uzivatele k zadání textu
-     * @return zadaný text
+     * Vyzve uzivatele k zadání textu a získá vstup z konzole
+     * @return Vstup z konzole
      */
     String ziskejVstup();
 
