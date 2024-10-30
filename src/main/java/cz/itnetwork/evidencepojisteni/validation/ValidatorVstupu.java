@@ -23,6 +23,13 @@ public class ValidatorVstupu {
      */
     public enum ValidatorEnum {
         /**
+         * Unikátní identifikátor
+         */
+        ID(
+                1,
+                Integer.MAX_VALUE
+        ),
+        /**
          * Křestní jméno
          */
         JMENO(
@@ -65,6 +72,7 @@ public class ValidatorVstupu {
             1,
             2
         );
+
 
         private final int min;
         private final int max;
@@ -131,6 +139,7 @@ public class ValidatorVstupu {
                 validatorEnum.toString().equals(ValidatorEnum.TELEFON.toString())
         ) isText = true;
         else if (
+                validatorEnum.toString().equals(ValidatorEnum.ID.toString()) ||
                 validatorEnum.toString().equals(ValidatorEnum.VEK.toString()) ||
                 validatorEnum.toString().equals(ValidatorEnum.VOLBA_AKCE_V_MENU.toString()) ||
                 validatorEnum.toString().equals(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI.toString())

@@ -15,11 +15,10 @@ public interface SpravcePojistenych {
     /**
      * Vrátí seznam pojištěných odpovídajících kritériím
      *
-     * @param jmeno    Jméno hledaného pojištěného
-     * @param prijmeni Příjmení hledaného pojištěného
+     * @param hledanyPojistenec Data o pojištěnci
      * @return Seznam pojištěných odpovídajících kritériím
      */
-    List<PojistenecDTO> najdiPojistene(String jmeno, String prijmeni);
+    List<PojistenecDTO> najdiPojisteneho(PojistenecDTO hledanyPojistenec);
 
     /**
      * Najde a vrátí pojištěného podle jeho ID

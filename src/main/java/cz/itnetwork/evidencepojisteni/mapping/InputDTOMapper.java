@@ -2,7 +2,6 @@ package cz.itnetwork.evidencepojisteni.mapping;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -34,13 +33,19 @@ public class InputDTOMapper<T> {
                                 break;
                             }
                         }
-                        // Převod na příslušný datový typ
-                        Object convertedValue = convertValueType(respectiveFieldValue, targetType);
+                        Object convertedValue = null;
+                        if (respectiveFieldValue != null && !respectiveFieldValue.isBlank()) {
+                            // Převod na příslušný datový typ
+                            convertedValue = convertValueType(respectiveFieldValue, targetType);
+                        }
 
-                        try {
-                            metoda.invoke(instanceDTO, convertedValue);
-                        } catch (IllegalAccessException | InvocationTargetException ex) {
-                            throw new RuntimeException("An exception occured during invoking DTO setters.", ex);
+                        // Podmínka pro odstranění setterů pro položky neobsažené v Map s vyplněnými položkami
+                        if (polozky.containsKey(setterFor.toLowerCase())) {
+                            try {
+                                metoda.invoke(instanceDTO, convertedValue);
+                            } catch (IllegalAccessException | InvocationTargetException ex) {
+                                throw new RuntimeException("An exception occured during invoking DTO setters.", ex);
+                            }
                         }
                     });
             return instanceDTO;
@@ -51,22 +56,18 @@ public class InputDTOMapper<T> {
 
     }
 
-    // Pomocná metoda pro konverzi Stringu na parametrem vyžadovaný typ
-    private Object convertValueType(String value, Class<?> targetType) {
-            if (targetType == String.class) {
-                return value;
-            } else if (targetType == int.class || targetType == Integer.class) {
-                return Integer.parseInt(value);
-            } else if (targetType == double.class || targetType == Double.class) {
-                return Double.parseDouble(value);
-            }
-            throw new IllegalArgumentException("Unsupported parameter type: " + targetType);
-    }
-
+    /**
+     * Aktualizuje atributy DTO odpovídající položkám předaným v Map.
+     * Prázdný String a absenci polozky interpretuje jako absenci změny daného atributu.
+     * @param dtoToUpdate DTO, jehož hodnoty se budou aktualizovat
+     * @param polozky Páry klíč-hodnota, kde klíč je jméno atributu a hodnota je příslušná hodnota
+     * @return Aktualizované DTO
+     */
     public T updateDTO(T dtoToUpdate, Map<String, String> polozky) {
        for (Map.Entry<String, String> polozka : polozky.entrySet()) {
-            if (polozka.getValue().isBlank()) {
-                polozky.remove(polozka.getKey());
+           // Odstranění prázdných položek, tedy těch, které se nebudou měnit
+           if (polozka.getValue().isBlank() || polozka.getValue() == null) {
+                polozky.remove(polozka);
             }
 
         Arrays.stream(dtoToUpdate.getClass().getMethods())
@@ -75,26 +76,43 @@ public class InputDTOMapper<T> {
                         metoda.getName().startsWith("set") &&
                         !metoda.getName().equalsIgnoreCase("setId")
                 ).filter(metoda ->
-                        !polozky.containsKey(metoda.getName().substring(3))
+                        !polozky.containsKey(metoda.getName().substring(3).toLowerCase())
                 ).forEach(metoda -> {
-                    String setterFor = metoda.getName().substring(3);
+                    String setterFor = metoda.getName().substring(3).toLowerCase();
                     Class<?> targetType = metoda.getParameterTypes()[0];
                     String respectiveFieldValue = "";
                     for (Map.Entry<String, String> upravovanaPolozka : polozky.entrySet()) {
                         if (upravovanaPolozka.getKey().equalsIgnoreCase(setterFor)) {
                             respectiveFieldValue = upravovanaPolozka.getValue();
-                            break;
+
+                            // Převod na příslušný datový typ
+                            Object convertedValue = convertValueType(respectiveFieldValue, targetType);
+                            try {
+                                metoda.invoke(dtoToUpdate, convertedValue);
+                            } catch (IllegalAccessException | InvocationTargetException ex) {
+                                throw new RuntimeException("An exception occured during invoking DTO setters.", ex);
+                            }
                         }
-                    }
-                    // Převod na příslušný datový typ
-                    Object convertedValue = convertValueType(respectiveFieldValue, targetType);
-                    try {
-                        metoda.invoke(dtoToUpdate, convertedValue);
-                    } catch (IllegalAccessException | InvocationTargetException ex) {
-                        throw new RuntimeException("An exception occured during invoking DTO setters.", ex);
                     }
                 });
         }
         return dtoToUpdate;
+    }
+
+    /**
+     * Pomocná metoda pro konverzi Stringu na parametrem vyžadovaný typ
+     * @param value String, který se bude konvertovat.
+     * @param targetType Požadovaný datový typ
+     * @return Object wrapper s konvertovanou hodnotou
+     */
+    private Object convertValueType(String value, Class<?> targetType) {
+        if (targetType == String.class) {
+            return value;
+        } else if (targetType == int.class || targetType == Integer.class) {
+            return Integer.parseInt(value);
+        } else if (targetType == double.class || targetType == Double.class) {
+            return Double.parseDouble(value);
+        }
+        throw new IllegalArgumentException("Unsupported parameter type: " + targetType);
     }
 }

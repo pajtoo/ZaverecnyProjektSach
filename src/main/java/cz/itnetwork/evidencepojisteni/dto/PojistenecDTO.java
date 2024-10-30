@@ -30,7 +30,7 @@ public class PojistenecDTO {
      * @param vek Věk
      * @param telefon Telefon
      */
-    public PojistenecDTO(String jmeno, String prijmeni, int vek, String telefon) {
+    public PojistenecDTO(String jmeno, String prijmeni, Integer vek, String telefon) {
         this.jmeno = jmeno;
         this.prijmeni = prijmeni;
         this.vek = vek;
@@ -68,14 +68,14 @@ public class PojistenecDTO {
     /**
      * @return the vek
      */
-    public int getVek() {
+    public Integer getVek() {
         return vek;
     }
 
     /**
      * @param vek the vek to set
      */
-    public void setVek(int vek) {
+    public void setVek(Integer vek) {
         this.vek = vek;
     }
 

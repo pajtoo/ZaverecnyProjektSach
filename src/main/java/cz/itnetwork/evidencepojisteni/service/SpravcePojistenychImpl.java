@@ -41,8 +41,9 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     }
 
     @Override
-    public List<PojistenecDTO> najdiPojistene(String jmeno, String prijmeni) {
-        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+    public List<PojistenecDTO> najdiPojisteneho(PojistenecDTO hledanyPojistenec) {
+        // insuredRepository.fin
+        return null;
     }
 
     @Override

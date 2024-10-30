@@ -8,6 +8,7 @@ import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu;
 import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
+import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 import cz.itnetwork.evidencepojisteni.view.enums.ZpravyOVysledkuOperaceEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,9 +86,9 @@ public class InsuredController {
         List<String> zadaneHodnoty = ui.pridejPojistence(pojistenecMappingDataProvider.getFieldLabels());
 
         // Validace dat
-        LinkedHashMap<ValidatorEnum, String> hodnotyKValidaci = getValidatorArgumentObject(zadaneHodnoty);
+        LinkedHashMap<ValidatorEnum, String> validatorArgumentObjects = getValidatorArgumentObject(zadaneHodnoty);
         List<String> zvalidovaneHodnoty = new ArrayList<>();
-        hodnotyKValidaci.forEach((key, value) -> {
+        validatorArgumentObjects.forEach((key, value) -> {
             zvalidovaneHodnoty.add(zajistiValidniVstup(key, true, value));
         });
 
@@ -96,34 +97,56 @@ public class InsuredController {
         PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
 
         // Uložení do databáze
-        try {
-            spravcePojistenych.pridejPojisteneho(pojistenecDTO);
-            ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message);
-        } catch (Exception ex) {
-            //TODO: upřesnění Exception v catch
-        }
-
+        PojistenecDTO savedData = spravcePojistenych.pridejPojisteneho(pojistenecDTO);
+        ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message + savedData.getId());
     }
 
     private void vyhledejPojistence() {
         ui.zahajVyhledavaniPojisteneho();
         int volba = Integer.parseInt(zajistiValidniVstup(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI, true));
-        List<String> parametryVyhledavani = new ArrayList<>();
+        List<String> hodnotyProVyhledavani = new ArrayList<>();
         switch (volba) {
             case 1:
-                // parametryVyhledavani = ui.ziskejHondotyKPolozkam(pojistenecMappingDataProvider.getFieldLabels());
+                // Získání dat z uživatelského vstupu
+                hodnotyProVyhledavani = ui.ziskejHodnotyProVyhledavani(pojistenecMappingDataProvider.getFieldLabels());
+                // Validace
+                LinkedHashMap<ValidatorEnum, String> validatorArgumentObjects = getValidatorArgumentObject(hodnotyProVyhledavani);
+                List<String> zvalidovaneHodnoty = new ArrayList<>();
+                validatorArgumentObjects.forEach((key, value) -> {
+                    zvalidovaneHodnoty.add(zajistiValidniVstup(key, false, value));
+                });
+                // Namapování na PojistenecDTO
+                Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
+                PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
+
+                //spravcePojistenych.najdiPojisteneho()
                 break;
             case 2:
-                List<String> popisky = new ArrayList<>();
-                popisky.add("ID: ");
-                parametryVyhledavani = ui.ziskejHodnotyKPolozkam(popisky);
+                List<PopiskyEnum> popisky = new ArrayList<>();
+                popisky.add(PopiskyEnum.ID);
+                hodnotyProVyhledavani = ui.ziskejHodnotyProVyhledavani(popisky);
                 break;
         }
 
         ui.vypisPojistence(null);
     }
     private void upravPojistence() {
-        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+        //vyhledání pojištěnce a fetchnutí z databáze
+
+        // Získání dat z uživatelského vstupu
+        List<String> zadaneHodnoty = ui.upravPojistence(pojistenecMappingDataProvider.getFieldLabels());
+
+        // Validace dat
+        LinkedHashMap<ValidatorEnum, String> validatorArgumentObjects
+                = getValidatorArgumentObject(zadaneHodnoty);
+        List<String> zvalidovaneHodnoty = new ArrayList<>();
+        validatorArgumentObjects.forEach((key, value) -> {
+            zvalidovaneHodnoty.add(zajistiValidniVstup(key, false, value));
+        });
+
+        //
+
+
     }
 
     private void odstranPojistence() {
@@ -158,7 +181,7 @@ public class InsuredController {
      * @param ex Výjimka, která nastala
      */
     private void zpracujChybnyVstup(Exception ex) {
-        //log.info("An invalid user input has been entered. ", ex);
+        logger.info("An invalid user input has been entered. ", ex);
         ui.vypisChybovouHlasku(ex);
     }
 

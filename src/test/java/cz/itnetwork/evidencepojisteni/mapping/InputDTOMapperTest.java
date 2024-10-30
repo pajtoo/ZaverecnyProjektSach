@@ -1,7 +1,6 @@
 package cz.itnetwork.evidencepojisteni.mapping;
 
 import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -12,21 +11,16 @@ import static org.assertj.core.api.Assertions.*;
 
 class InputDTOMapperTest {
 
-    InputDTOMapper<PojistenecDTO> inputDTOMapper = new InputDTOMapper<>();
-
-    @BeforeEach
-    void setUp() {
-    }
+    private final InputDTOMapper<PojistenecDTO> inputDTOMapper = new InputDTOMapper<>();
+    private final PojistenecDTO pojistenecDTO = new PojistenecDTO(
+            "Milan",
+            null,
+            24,
+            "+420123456789"
+    );
 
     @Test
     void createDTO() {
-        PojistenecDTO pojistenecDTO = new PojistenecDTO(
-                "Milan",
-                "Novák",
-                24,
-                "+420123456789"
-        );
-
         Map<String, String> mapperArgumentObject = getMapperArgumentObject(pojistenecDTO);
         PojistenecDTO createdDTO = inputDTOMapper.createDTO(PojistenecDTO.class, mapperArgumentObject);
 
@@ -35,6 +29,12 @@ class InputDTOMapperTest {
 
     @Test
     void updateDTO() {
+        Map<String, String> valuesBeingUpdated = new HashMap<>();
+        valuesBeingUpdated.put("jmeno", "Karel");
+        PojistenecDTO updatedDTO = inputDTOMapper.updateDTO(pojistenecDTO, valuesBeingUpdated);
+        pojistenecDTO.setJmeno("Karel");
+
+        assertThat(updatedDTO).usingRecursiveComparison().isEqualTo(pojistenecDTO);
     }
 
     /**
@@ -52,7 +52,9 @@ class InputDTOMapperTest {
                 ).forEach(metoda -> {
                     String value;
                     try {
-                        value = String.valueOf(metoda.invoke(dto));
+                        if (metoda.invoke(dto) == null) {
+                            value = null;
+                        } else value = String.valueOf(metoda.invoke(dto));
                     } catch (IllegalAccessException | InvocationTargetException e) {
                         throw new RuntimeException(e);
                     }

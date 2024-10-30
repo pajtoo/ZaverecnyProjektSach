@@ -33,7 +33,7 @@ public interface UzivatelskeRozhrani {
      * @param popisky Seznam parametrů vyhledávání
      * @return Seznam hodnot
      */
-    List<String> ziskejParametryVyhledavani(List<PopiskyEnum> popisky);
+    List<String> ziskejHodnotyProVyhledavani(List<PopiskyEnum> popisky);
 
     /**
      * Každou z položek uvede popiskem a následně si vyžádá zadání příslušné hodnoty.

@@ -25,10 +25,6 @@ public class FieldMap {
         MAPPING_MAP.put("PojistenecDTO:telefon", new MappingObject(PopiskyEnum.TELEFON, ValidatorVstupu.ValidatorEnum.TELEFON));
     }
 
-    private static LinkedHashMap<String, MappingObject> getMappingMap() {
-        return MAPPING_MAP;
-    }
-
     /**
      * Vrací slovník (map) s položkami (atribut, MappingObject) ke každému z atributů přítomných v předané třídě s výjimkou id.
      * Potřebné k iteraci jednotlivých atributů.
@@ -40,7 +36,7 @@ public class FieldMap {
         LinkedHashMap<String, MappingObject> mapAtributyBezId = new LinkedHashMap<>();
         // Cyklus, který ze slovníku vybere pouze relevantní položky
         for (int i = 0; i < atributy.length; i++) {
-            for (Map.Entry<String, MappingObject> entry : getMappingMap().entrySet()) {
+            for (Map.Entry<String, MappingObject> entry : MAPPING_MAP.entrySet()) {
                 String key = entry.getKey();
                 MappingObject value = entry.getValue();
 

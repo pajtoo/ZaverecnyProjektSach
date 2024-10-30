@@ -79,7 +79,8 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
     }
 
     @Override
-    public List<String> ziskejParametryVyhledavani(List<PopiskyEnum> popisky) {
+    public List<String> ziskejHodnotyProVyhledavani(List<PopiskyEnum> popisky) {
+        // informovat o tom, že lze ponechat danou položku prázdnou
         List<String> polozky = new ArrayList<>();
         // Extrakce základní varianty popisku
         popisky.forEach(popisek -> polozky.add(popisek.popisek));
