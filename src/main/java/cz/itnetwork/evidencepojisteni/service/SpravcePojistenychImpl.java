@@ -9,10 +9,13 @@ import cz.itnetwork.evidencepojisteni.mapping.InsuredDTOEntityMapper;
 import cz.itnetwork.evidencepojisteni.persistence.entity.InsuredEntity;
 import cz.itnetwork.evidencepojisteni.persistence.repository.InsuredRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Třída je implementací pro perzistenci pomocí PostgreSQL
@@ -42,17 +45,27 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
 
     @Override
     public List<PojistenecDTO> najdiPojisteneho(PojistenecDTO hledanyPojistenec) {
-        // insuredRepository.fin
-        return null;
+        InsuredEntity insuredEntity = insuredDTOEntityMapper.toEntity(hledanyPojistenec);
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnoreNullValues()
+                .withIgnorePaths("id");
+        Example<InsuredEntity> example = Example.of(insuredEntity, matcher);
+        List<InsuredEntity> foundEntities = insuredRepository.findAll(example);
+        List<PojistenecDTO> foundPersons = new ArrayList<>();
+        for (InsuredEntity foundEntity : foundEntities) {
+            foundPersons.add(insuredDTOEntityMapper.toDTO(foundEntity));
+        }
+        return foundPersons;
     }
 
     @Override
-    public PojistenecDTO najdiPojisteneho(int id) {
-        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+    public PojistenecDTO najdiPojisteneho(Long id) {
+        Optional<InsuredEntity> insuredEntity = insuredRepository.findById(id);
+        insuredEntity.orElseThrow()
     }
 
     @Override
-    public PojistenecDTO pridejPojisteneho(PojistenecDTO pojistenec) {
+    public PojistenecDTO ulozPojisteneho(PojistenecDTO pojistenec) {
         InsuredEntity insuredEntity = insuredRepository.save(insuredDTOEntityMapper.toEntity(pojistenec));
         return insuredDTOEntityMapper.toDTO(insuredEntity);
     }

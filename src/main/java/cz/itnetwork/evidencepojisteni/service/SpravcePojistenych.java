@@ -26,14 +26,14 @@ public interface SpravcePojistenych {
      * @param id ID pojištěného
      * @return Vrátí pojištěného se zadaným ID
      */
-    PojistenecDTO najdiPojisteneho(int id);
+    PojistenecDTO najdiPojisteneho(Long id);
 
     /**
      * Vytvoří nového pojištěného
      *
      * @param pojistenec Pojištěnec
      */
-    PojistenecDTO pridejPojisteneho(PojistenecDTO pojistenec);
+    PojistenecDTO ulozPojisteneho(PojistenecDTO pojistenec);
 
     /**
      * Upraví atributy pojištěného s určitým id

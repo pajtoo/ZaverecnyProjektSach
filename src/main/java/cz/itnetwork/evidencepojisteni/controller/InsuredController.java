@@ -97,7 +97,7 @@ public class InsuredController {
         PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
 
         // Uložení do databáze
-        PojistenecDTO savedData = spravcePojistenych.pridejPojisteneho(pojistenecDTO);
+        PojistenecDTO savedData = spravcePojistenych.ulozPojisteneho(pojistenecDTO);
         ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message + savedData.getId());
     }
 
@@ -117,9 +117,10 @@ public class InsuredController {
                 });
                 // Namapování na PojistenecDTO
                 Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
-                PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
+                PojistenecDTO hledanyPojistenec = new PojistenecDTO();
+                inputDTOMapper.updateDTO(hledanyPojistenec, validniPolozky);
 
-                //spravcePojistenych.najdiPojisteneho()
+                spravcePojistenych.najdiPojisteneho(hledanyPojistenec);
                 break;
             case 2:
                 List<PopiskyEnum> popisky = new ArrayList<>();
@@ -132,6 +133,7 @@ public class InsuredController {
     }
     private void upravPojistence() {
         //vyhledání pojištěnce a fetchnutí z databáze
+        PojistenecDTO fetchedDTO;
 
         // Získání dat z uživatelského vstupu
         List<String> zadaneHodnoty = ui.upravPojistence(pojistenecMappingDataProvider.getFieldLabels());
@@ -144,8 +146,13 @@ public class InsuredController {
             zvalidovaneHodnoty.add(zajistiValidniVstup(key, false, value));
         });
 
-        //
+        // Namapování na PojistenecDTO
+        Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
+        PojistenecDTO updatedDTO = inputDTOMapper.updateDTO(fetchedDTO, validniPolozky);
 
+        // Uložení do databáze
+        PojistenecDTO savedData = spravcePojistenych.ulozPojisteneho(updatedDTO);
+        ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.UPDATE_SUCCESS.message);
 
     }
 
