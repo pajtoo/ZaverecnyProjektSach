@@ -1,6 +1,7 @@
 package cz.itnetwork.evidencepojisteni.controller;
 
 import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.exception.DatabaseOperationException;
 import cz.itnetwork.evidencepojisteni.exception.InvalidUserInputException;
 import cz.itnetwork.evidencepojisteni.exception.handler.RecoverableExceptionHandler;
 import cz.itnetwork.evidencepojisteni.mapping.InputDTOMapper;
@@ -11,7 +12,10 @@ import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
 import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 import cz.itnetwork.evidencepojisteni.view.enums.ZpravyOVysledkuOperaceEnum;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -107,7 +111,12 @@ public class InsuredController {
         Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
         PojistenecDTO hledanyPojistenec = new PojistenecDTO();
         inputDTOMapper.updateDTO(hledanyPojistenec, validniPolozky);
-        vyhledaniPojistenci = spravcePojistenych.najdiPojisteneho(hledanyPojistenec);
+        try {
+            vyhledaniPojistenci = spravcePojistenych.najdiPojistene(hledanyPojistenec);
+        } catch (DataAccessException | PersistenceException ex) {
+            DatabaseOperationException exception = new DatabaseOperationException(ZpravyOVysledkuOperaceEnum.SEARCH_FAIL.message, ex);
+            exceptionHandler.zpracujVyjimku(exception);
+        }
         return vyhledaniPojistenci;
     }
 
@@ -119,10 +128,11 @@ public class InsuredController {
 
         PojistenecDTO nalezenyPojistenec = new PojistenecDTO();
         try {
-            nalezenyPojistenec = spravcePojistenych.najdiPojisteneho(zvalidovaneId);
-        } catch (NoSuchElementException ex) {
-            NoSuchElementException exception = new NoSuchElementException(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message + zvalidovaneId, ex);
-            exceptionHandler.zpracujVyjimku(exception);
+            nalezenyPojistenec = spravcePojistenych.najdiPojistene(zvalidovaneId);
+        } catch (EntityNotFoundException ex) {
+            exceptionHandler.zpracujVyjimku(ex);
+        } catch (DataAccessException | PersistenceException ex) {
+            DatabaseOperationException exception = new DatabaseOperationException(ZpravyOVysledkuOperaceEnum.SEARCH_FAIL.message, ex);
         }
         return nalezenyPojistenec;
     }
@@ -186,8 +196,12 @@ public class InsuredController {
         PojistenecDTO pojistenecDTO = inputDTOMapper.createDTO(PojistenecDTO.class, validniPolozky);
 
         // Uložení do databáze
-        PojistenecDTO savedData = spravcePojistenych.ulozPojisteneho(pojistenecDTO);
-        ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message + savedData.getId());
+        try {
+            PojistenecDTO savedData = spravcePojistenych.ulozPojisteneho(pojistenecDTO);
+            ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message + savedData.getId());
+        } catch (DataAccessException | PersistenceException ex) {
+            DatabaseOperationException exception = new DatabaseOperationException(ZpravyOVysledkuOperaceEnum.SAVE_FAIL.message, ex);
+        }
     }
 
     private void upravPojistence(PojistenecDTO pojistenec) {
@@ -208,12 +222,22 @@ public class InsuredController {
         PojistenecDTO updatedDTO = inputDTOMapper.updateDTO(pojistenec, validniPolozky);
 
         // Uložení do databáze
-        spravcePojistenych.ulozPojisteneho(updatedDTO);
-        ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.UPDATE_SUCCESS.message);
+        try {
+            spravcePojistenych.ulozPojisteneho(updatedDTO);
+            ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.UPDATE_SUCCESS.message);
+        } catch (DataAccessException | PersistenceException ex) {
+            DatabaseOperationException exception = new DatabaseOperationException(ZpravyOVysledkuOperaceEnum.SAVE_FAIL.message, ex);
+            exceptionHandler.zpracujVyjimku(exception);
+        }
     }
 
     private void odstranPojistence(PojistenecDTO pojistenec) {
-        spravcePojistenych.odstranPojisteneho()
+        try {
+            spravcePojistenych.odstranPojisteneho(pojistenec);
+        } catch (DataAccessException | PersistenceException ex) {
+            DatabaseOperationException exception = new DatabaseOperationException(ZpravyOVysledkuOperaceEnum.DELETE_FAIL.message, ex);
+            exceptionHandler.zpracujVyjimku(exception);
+        }
     }
 
     /**

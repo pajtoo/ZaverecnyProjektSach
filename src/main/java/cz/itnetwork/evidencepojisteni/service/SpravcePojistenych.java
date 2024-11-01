@@ -18,7 +18,7 @@ public interface SpravcePojistenych {
      * @param hledanyPojistenec Data o pojištěnci
      * @return Seznam pojištěných odpovídajících kritériím
      */
-    List<PojistenecDTO> najdiPojisteneho(PojistenecDTO hledanyPojistenec);
+    List<PojistenecDTO> najdiPojistene(PojistenecDTO hledanyPojistenec);
 
     /**
      * Najde a vrátí pojištěného podle jeho ID
@@ -26,7 +26,7 @@ public interface SpravcePojistenych {
      * @param id ID pojištěného
      * @return Vrátí pojištěného se zadaným ID
      */
-    PojistenecDTO najdiPojisteneho(Long id);
+    PojistenecDTO najdiPojistene(Long id);
 
     /**
      * Vytvoří nového pojištěného
@@ -38,9 +38,9 @@ public interface SpravcePojistenych {
     /**
      * Odstraní pojištěného se zadaným id, pokud existuje
      *
-     * @param id ID odstraňovaného pojištěnce
+     * @param pojistenec odstraňovaný pojištěnec
      * @return Vrací true, pokud pojištěný se zadaným id existuje, jinak vrací
      * false.
      */
-    boolean odstranPojisteneho(int id);
+    void odstranPojisteneho(PojistenecDTO pojistenec);
 }

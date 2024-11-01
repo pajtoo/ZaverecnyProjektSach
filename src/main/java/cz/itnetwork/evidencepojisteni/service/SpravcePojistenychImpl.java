@@ -8,6 +8,8 @@ import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.mapping.InsuredDTOEntityMapper;
 import cz.itnetwork.evidencepojisteni.persistence.entity.InsuredEntity;
 import cz.itnetwork.evidencepojisteni.persistence.repository.InsuredRepository;
+import cz.itnetwork.evidencepojisteni.view.enums.ZpravyOVysledkuOperaceEnum;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -45,7 +47,7 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     }
 
     @Override
-    public List<PojistenecDTO> najdiPojisteneho(PojistenecDTO hledanyPojistenec) {
+    public List<PojistenecDTO> najdiPojistene(PojistenecDTO hledanyPojistenec) {
         InsuredEntity insuredEntity = insuredDTOEntityMapper.toEntity(hledanyPojistenec);
         ExampleMatcher matcher = ExampleMatcher.matching()
                 .withIgnoreNullValues()
@@ -60,10 +62,10 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     }
 
     @Override
-    public PojistenecDTO najdiPojisteneho(Long id) {
+    public PojistenecDTO najdiPojistene(Long id) {
         InsuredEntity insuredEntity = insuredRepository
                 .findById(id).
-                orElseThrow(() -> new NoSuchElementException("Pojištěnec s id: " + id + " nebyl nalezen." )));
+                orElseThrow(() -> new EntityNotFoundException(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message + id);
         return insuredDTOEntityMapper.toDTO(insuredEntity);
     }
 
@@ -74,7 +76,7 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     }
 
     @Override
-    public boolean odstranPojisteneho(int id) {
-        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+    public void odstranPojisteneho(PojistenecDTO pojistenec) {
+        insuredRepository.delete(insuredDTOEntityMapper.toEntity(pojistenec));
     }
 }
