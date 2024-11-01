@@ -74,11 +74,6 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     }
 
     @Override
-    public boolean upravPojisteneho(int id, String noveJmeno, String novePrijmeni, int novyVek, String novyTelefon) {
-        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
-    }
-
-    @Override
     public boolean odstranPojisteneho(int id) {
         throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
     }

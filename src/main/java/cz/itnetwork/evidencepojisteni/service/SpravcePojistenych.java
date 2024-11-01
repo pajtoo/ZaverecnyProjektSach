@@ -36,18 +36,6 @@ public interface SpravcePojistenych {
     PojistenecDTO ulozPojisteneho(PojistenecDTO pojistenec);
 
     /**
-     * Upraví atributy pojištěného s určitým id
-     *
-     * @param id           ID pojištěného
-     * @param noveJmeno    Nové jméno pojištěného
-     * @param novePrijmeni Nové příjmení pojištěného
-     * @param novyVek      Nový věk pojištěného
-     * @param novyTelefon  Nový telefon pojištěného
-     * @return Pokud uživatel s daným id existuje, vrátí true, jinak vrátí false
-     */
-    boolean upravPojisteneho(int id, String noveJmeno, String novePrijmeni, int novyVek, String novyTelefon);
-
-    /**
      * Odstraní pojištěného se zadaným id, pokud existuje
      *
      * @param id ID odstraňovaného pojištěnce
