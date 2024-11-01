@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -60,8 +61,10 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
 
     @Override
     public PojistenecDTO najdiPojisteneho(Long id) {
-        Optional<InsuredEntity> insuredEntity = insuredRepository.findById(id);
-        insuredEntity.orElseThrow()
+        InsuredEntity insuredEntity = insuredRepository
+                .findById(id).
+                orElseThrow(() -> new NoSuchElementException("Pojištěnec s id: " + id + " nebyl nalezen." )));
+        return insuredDTOEntityMapper.toDTO(insuredEntity);
     }
 
     @Override

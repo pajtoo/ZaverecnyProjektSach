@@ -1,6 +1,7 @@
 package cz.itnetwork.evidencepojisteni.config;
 
 import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
+import cz.itnetwork.evidencepojisteni.exception.handler.RecoverableExceptionHandler;
 import cz.itnetwork.evidencepojisteni.mapping.InputDTOMapper;
 import cz.itnetwork.evidencepojisteni.mapping.MappingDataProvider;
 import org.springframework.context.annotation.Bean;
@@ -24,5 +25,10 @@ public class AppConfig {
     @Bean
     public MappingDataProvider pojistenecMappingDataProvider() {
        return new MappingDataProvider(PojistenecDTO.class);
+    }
+
+    @Bean
+    public RecoverableExceptionHandler recoverableExceptionHandler() {
+        return new RecoverableExceptionHandler();
     }
 }

@@ -48,9 +48,7 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
         System.out.println("1 - Vypsat všechny pojištěnce");
         System.out.println("2 - Vyhledat pojištěnce");
         System.out.println("3 - Přidat pojištěnce");
-        System.out.println("4 - Upravit pojištěnce");
-        System.out.println("5 - Odstranit pojištěnce");
-        System.out.println("6 - Konec");
+        System.out.println("4 - Konec");
     }
 
     @Override
@@ -67,15 +65,20 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
         }
     }
 
-
-
     @Override
     public String zahajVyhledavaniPojisteneho() {
         System.out.println("----- Vyhledávání pojištěných -----");
         System.out.println("Zvolte si prosím vyhledávací kritérium: ");
         System.out.println("1 - Podle osobních údajů");
         System.out.println("2 - Podle ID");
-        return scanner.nextLine();
+        return ziskejVstup();
+    }
+
+    public String ziskejVolbuPraceSPojistencem() {
+        System.out.println("1 - Upravit pojištěnce");
+        System.out.println("2 - Odstranit pojištěnce");
+        System.out.println("3 - Návrat do hlavní nabídky");
+        return ziskejVstup();
     }
 
     @Override

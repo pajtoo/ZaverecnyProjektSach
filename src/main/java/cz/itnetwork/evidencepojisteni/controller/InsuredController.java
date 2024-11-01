@@ -2,6 +2,7 @@ package cz.itnetwork.evidencepojisteni.controller;
 
 import cz.itnetwork.evidencepojisteni.dto.PojistenecDTO;
 import cz.itnetwork.evidencepojisteni.exception.InvalidUserInputException;
+import cz.itnetwork.evidencepojisteni.exception.handler.RecoverableExceptionHandler;
 import cz.itnetwork.evidencepojisteni.mapping.InputDTOMapper;
 import cz.itnetwork.evidencepojisteni.mapping.MappingDataProvider;
 import cz.itnetwork.evidencepojisteni.service.SpravcePojistenych;
@@ -10,8 +11,7 @@ import cz.itnetwork.evidencepojisteni.validation.ValidatorVstupu.ValidatorEnum;
 import cz.itnetwork.evidencepojisteni.view.UzivatelskeRozhrani;
 import cz.itnetwork.evidencepojisteni.view.enums.PopiskyEnum;
 import cz.itnetwork.evidencepojisteni.view.enums.ZpravyOVysledkuOperaceEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -19,7 +19,8 @@ import java.util.*;
 @Component
 public class InsuredController {
 
-    private static final Logger logger = LoggerFactory.getLogger(InsuredController.class);
+    @Autowired
+    private RecoverableExceptionHandler exceptionHandler;
     private final UzivatelskeRozhrani ui;
     private final SpravcePojistenych spravcePojistenych;
     private final ValidatorVstupu validator;
@@ -42,11 +43,11 @@ public class InsuredController {
 
     public void run() {
         ui.vykresliUvodniObrazovku();
-        ziskejVolbuZNabidky();
+        ziskejVolbuZUvodniNabidky();
     }
 
     
-    private void ziskejVolbuZNabidky() {
+    private void ziskejVolbuZUvodniNabidky() {
         boolean isKonec = false;
         while (!isKonec) {
             ui.vypisUvodniNabidku();
@@ -54,7 +55,7 @@ public class InsuredController {
 
             switch (volba) {
                 case 1:
-                    vypisVsechnyPojistence();
+                    ziskejVsechnyPojistence();
                     break;
                 case 2:
                     vyhledejPojistence();
@@ -63,12 +64,6 @@ public class InsuredController {
                     pridejPojistence();
                     break;
                 case 4:
-                    upravPojistence();
-                    break;
-                case 5:
-                    odstranPojistence();
-                    break;
-                case 6:
                     ui.vypisZpravu("Děkujeme za využití aplikace. Nashledanou!");
                     isKonec = true;
                     break;
@@ -76,9 +71,103 @@ public class InsuredController {
         }
     }
 
-    private void vypisVsechnyPojistence() {
+    private void ziskejVsechnyPojistence() {
         List<PojistenecDTO> pojistenci = spravcePojistenych.vratVsechnyPojistene();
+        vratNalezenePojistence(pojistenci);
+    }
+
+    private void vyhledejPojistence() {
+        ui.zahajVyhledavaniPojisteneho();
+        int volba = Integer.parseInt(zajistiValidniVstup(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI, true));
+        List<PojistenecDTO> vyhledaniPojistenci = new ArrayList<>();
+        switch (volba) {
+            case 1:
+                vyhledaniPojistenci = vyhledejPodleParametru();
+                break;
+            case 2:
+                PojistenecDTO nalezenyPojistenec = vyhledejPodleId();
+                vyhledaniPojistenci.add(nalezenyPojistenec);
+                break;
+        }
+        vratNalezenePojistence(vyhledaniPojistenci);
+    }
+
+    private List<PojistenecDTO> vyhledejPodleParametru() {
+        List<PojistenecDTO> vyhledaniPojistenci;
+        List<String> hodnotyProVyhledavani;
+        // Získání dat z uživatelského vstupu
+        hodnotyProVyhledavani = ui.ziskejHodnotyProVyhledavani(pojistenecMappingDataProvider.getFieldLabels());
+        // Validace
+        LinkedHashMap<ValidatorEnum, String> validatorArgumentObjects = getValidatorArgumentObject(hodnotyProVyhledavani);
+        List<String> zvalidovaneHodnoty = new ArrayList<>();
+        validatorArgumentObjects.forEach((key, value) -> {
+            zvalidovaneHodnoty.add(zajistiValidniVstup(key, false, value));
+        });
+        // Namapování na PojistenecDTO
+        Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
+        PojistenecDTO hledanyPojistenec = new PojistenecDTO();
+        inputDTOMapper.updateDTO(hledanyPojistenec, validniPolozky);
+        vyhledaniPojistenci = spravcePojistenych.najdiPojisteneho(hledanyPojistenec);
+        return vyhledaniPojistenci;
+    }
+
+    private PojistenecDTO vyhledejPodleId() {
+        List<PopiskyEnum> popisky = new ArrayList<>();
+        popisky.add(PopiskyEnum.ID);
+        List<String> hodnotyProVyhledavani = ui.ziskejHodnotyProVyhledavani(popisky);
+        Long zvalidovaneId = Long.parseLong(zajistiValidniVstup(ValidatorEnum.ID, true, hodnotyProVyhledavani.getFirst()));
+
+        PojistenecDTO nalezenyPojistenec = new PojistenecDTO();
+        try {
+            nalezenyPojistenec = spravcePojistenych.najdiPojisteneho(zvalidovaneId);
+        } catch (NoSuchElementException ex) {
+            NoSuchElementException exception = new NoSuchElementException(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message + zvalidovaneId, ex);
+            exceptionHandler.zpracujVyjimku(exception);
+        }
+        return nalezenyPojistenec;
+    }
+
+    private void vratNalezenePojistence(List<PojistenecDTO> pojistenci) {
         ui.vypisPojistence(pojistenci);
+        if (!pojistenci.isEmpty()) {
+            zahajPraciSPojistencem(pojistenci);
+        } else ziskejVolbuZUvodniNabidky();
+    }
+
+    private void zahajPraciSPojistencem(List<PojistenecDTO> pojistenci) {
+        String volba = ui.ziskejVolbuPraceSPojistencem();
+        int volbaCislo = Integer.parseInt(zajistiValidniVstup(ValidatorEnum.VOLBA_AKCE_V_MENU, true, volba));
+        PojistenecDTO pojistenec = null;
+        if (pojistenci.size() > 1) {
+            // Získání validního id
+            List<PopiskyEnum> popisky = new ArrayList<>();
+            popisky.add(PopiskyEnum.ID);
+            List<String> hodnotyProVyhledavani = ui.ziskejHodnotyProVyhledavani(popisky);
+
+            Long zvalidovaneId = Long.parseLong(zajistiValidniVstup(ValidatorEnum.ID, true, hodnotyProVyhledavani.getFirst()));
+
+            // Vyhledání pojištěnce v Listu
+            for (PojistenecDTO pojistenecDTO : pojistenci) {
+                if (pojistenecDTO.getId().equals(zvalidovaneId)) {
+                    pojistenec = pojistenecDTO;
+                    break;
+                }
+            }
+            if (pojistenec == null) {
+                ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.ID_NOT_FOUND_IN_FETCHED_INSURED.message + zvalidovaneId);
+                zahajPraciSPojistencem(pojistenci);
+            }
+        } else pojistenec = pojistenci.getFirst();
+
+        switch (volbaCislo) {
+            case 1:
+                upravPojistence(pojistenec);
+                break;
+            case 2:
+                odstranPojistence(pojistenec);
+            case 3:
+                ziskejVolbuZUvodniNabidky();
+        }
     }
 
     private void pridejPojistence() {
@@ -101,39 +190,7 @@ public class InsuredController {
         ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.CREATE_SUCCESS.message + savedData.getId());
     }
 
-    private void vyhledejPojistence() {
-        ui.zahajVyhledavaniPojisteneho();
-        int volba = Integer.parseInt(zajistiValidniVstup(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI, true));
-        List<String> hodnotyProVyhledavani = new ArrayList<>();
-        switch (volba) {
-            case 1:
-                // Získání dat z uživatelského vstupu
-                hodnotyProVyhledavani = ui.ziskejHodnotyProVyhledavani(pojistenecMappingDataProvider.getFieldLabels());
-                // Validace
-                LinkedHashMap<ValidatorEnum, String> validatorArgumentObjects = getValidatorArgumentObject(hodnotyProVyhledavani);
-                List<String> zvalidovaneHodnoty = new ArrayList<>();
-                validatorArgumentObjects.forEach((key, value) -> {
-                    zvalidovaneHodnoty.add(zajistiValidniVstup(key, false, value));
-                });
-                // Namapování na PojistenecDTO
-                Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
-                PojistenecDTO hledanyPojistenec = new PojistenecDTO();
-                inputDTOMapper.updateDTO(hledanyPojistenec, validniPolozky);
-
-                spravcePojistenych.najdiPojisteneho(hledanyPojistenec);
-                break;
-            case 2:
-                List<PopiskyEnum> popisky = new ArrayList<>();
-                popisky.add(PopiskyEnum.ID);
-                hodnotyProVyhledavani = ui.ziskejHodnotyProVyhledavani(popisky);
-                break;
-        }
-
-        ui.vypisPojistence(null);
-    }
-    private void upravPojistence() {
-        //vyhledání pojištěnce a fetchnutí z databáze
-        PojistenecDTO fetchedDTO;
+    private void upravPojistence(PojistenecDTO pojistenec) {
 
         // Získání dat z uživatelského vstupu
         List<String> zadaneHodnoty = ui.upravPojistence(pojistenecMappingDataProvider.getFieldLabels());
@@ -148,16 +205,15 @@ public class InsuredController {
 
         // Namapování na PojistenecDTO
         Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
-        PojistenecDTO updatedDTO = inputDTOMapper.updateDTO(fetchedDTO, validniPolozky);
+        PojistenecDTO updatedDTO = inputDTOMapper.updateDTO(pojistenec, validniPolozky);
 
         // Uložení do databáze
-        PojistenecDTO savedData = spravcePojistenych.ulozPojisteneho(updatedDTO);
+        spravcePojistenych.ulozPojisteneho(updatedDTO);
         ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.UPDATE_SUCCESS.message);
-
     }
 
-    private void odstranPojistence() {
-        throw new UnsupportedOperationException("Tato funkce zatím nebyla implementována");
+    private void odstranPojistence(PojistenecDTO pojistenec) {
+        spravcePojistenych.odstranPojisteneho()
     }
 
     /**
@@ -176,20 +232,11 @@ public class InsuredController {
         try {
             vstup = validator.zvaliduj(validatorEnum, jePovinny, vstup);
         } catch (InvalidUserInputException | NumberFormatException ex) {
-            zpracujChybnyVstup(ex);
+            exceptionHandler.zpracujChybnyVstup(ex);
             ui.vyzviKOpakovaniZadani();
             return zajistiValidniVstup(validatorEnum, jePovinny);
         }
         return vstup;
-    }
-
-    /**
-     * Zaloguje chybu a pošle zprávu uživateli
-     * @param ex Výjimka, která nastala
-     */
-    private void zpracujChybnyVstup(Exception ex) {
-        logger.info("An invalid user input has been entered. ", ex);
-        ui.vypisChybovouHlasku(ex);
     }
 
     private Map<String, String> getMapperArgumentObject(List<String> zvalidovaneHodnoty) {

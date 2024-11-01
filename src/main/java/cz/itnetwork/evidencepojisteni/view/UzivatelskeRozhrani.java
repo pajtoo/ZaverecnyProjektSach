@@ -36,6 +36,12 @@ public interface UzivatelskeRozhrani {
     List<String> ziskejHodnotyProVyhledavani(List<PopiskyEnum> popisky);
 
     /**
+     * Vypíše nabídku pro práci s pojištěncem a vrátí volbu uživatele
+     * @return volba uživatele
+     */
+    public String ziskejVolbuPraceSPojistencem();
+
+    /**
      * Každou z položek uvede popiskem a následně si vyžádá zadání příslušné hodnoty.
      *
      * @param polozky Položky, jejichž hodnota je požadována

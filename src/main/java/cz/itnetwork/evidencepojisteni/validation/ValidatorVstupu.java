@@ -71,6 +71,11 @@ public class ValidatorVstupu {
         VOLBA_ZPUSOBU_VYHLEDAVANI(
             1,
             2
+        ),
+
+        VOLBA_AKCE_V_MENU_POJISTENCE(
+            1,
+            3
         );
 
 
@@ -142,7 +147,8 @@ public class ValidatorVstupu {
                 validatorEnum.toString().equals(ValidatorEnum.ID.toString()) ||
                 validatorEnum.toString().equals(ValidatorEnum.VEK.toString()) ||
                 validatorEnum.toString().equals(ValidatorEnum.VOLBA_AKCE_V_MENU.toString()) ||
-                validatorEnum.toString().equals(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI.toString())
+                validatorEnum.toString().equals(ValidatorEnum.VOLBA_ZPUSOBU_VYHLEDAVANI.toString()) ||
+                validatorEnum.toString().equals(ValidatorEnum.VOLBA_AKCE_V_MENU_POJISTENCE.toString())
         ) isNumber = true;
 
         if (vstup.isEmpty() && jePovinny) {

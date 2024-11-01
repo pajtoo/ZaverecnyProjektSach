@@ -1,11 +1,10 @@
-package cz.itnetwork.evidencepojisteni.exception;
+package cz.itnetwork.evidencepojisteni.exception.handler;
 
-import cz.itnetwork.evidencepojisteni.controller.InsuredController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MyUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
-    private static final Logger log = LoggerFactory.getLogger(InsuredController.class);
+public class UncaughtExceptionHandlerImpl implements Thread.UncaughtExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(UncaughtExceptionHandlerImpl.class);
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {

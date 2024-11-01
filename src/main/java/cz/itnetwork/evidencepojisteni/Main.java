@@ -4,7 +4,7 @@
 package cz.itnetwork.evidencepojisteni;
 
 import cz.itnetwork.evidencepojisteni.controller.InsuredController;
-import cz.itnetwork.evidencepojisteni.exception.MyUncaughtExceptionHandler;
+import cz.itnetwork.evidencepojisteni.exception.handler.UncaughtExceptionHandlerImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -17,7 +17,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class Main {
     public static void main(String[] args) {
         ConfigurableApplicationContext appContext = SpringApplication.run(Main.class, args);
-        Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler());
+        Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandlerImpl());
         InsuredController insuredController = appContext.getBean(InsuredController.class);
         insuredController.run();
     }
