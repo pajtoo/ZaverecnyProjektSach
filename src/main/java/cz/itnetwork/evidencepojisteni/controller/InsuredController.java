@@ -111,7 +111,7 @@ public class InsuredController {
         // Namapování na PojistenecDTO
         Map<String, String> validniPolozky = getMapperArgumentObject(zvalidovaneHodnoty);
         PojistenecDTO hledanyPojistenec = new PojistenecDTO();
-        inputDTOMapper.updateDTO(hledanyPojistenec, validniPolozky);
+        hledanyPojistenec = inputDTOMapper.updateDTO(hledanyPojistenec, validniPolozky);
         try {
             vyhledaniPojistenci = spravcePojistenych.najdiPojistene(hledanyPojistenec);
         } catch (DataAccessException | PersistenceException ex) {
@@ -145,23 +145,25 @@ public class InsuredController {
 
     private void zahajPraciSPojistencem(List<PojistenecDTO> pojistenci) {
         ui.vypisNabidkuPraceSPojistencem();
-        int volbaCislo = Integer.parseInt(zajistiValidniVstup(null, ValidatorEnum.VOLBA_AKCE_V_MENU, true));
+        int volbaCislo = Integer.parseInt(zajistiValidniVstup(null, ValidatorEnum.VOLBA_AKCE_V_MENU_POJISTENCE, true));
         PojistenecDTO pojistenec = null;
-        if (pojistenci.size() > 1) {
-            Long zvalidovaneId = Long.parseLong(zajistiValidniVstup(PopiskyEnum.ID.popisek, ValidatorEnum.ID, true));
+        if (volbaCislo != 3) {
+            if (pojistenci.size() > 1) {
+                Long zvalidovaneId = Long.parseLong(zajistiValidniVstup(PopiskyEnum.ID.popisek, ValidatorEnum.ID, true));
 
-            // Vyhledání pojištěnce v Listu
-            for (PojistenecDTO pojistenecDTO : pojistenci) {
-                if (pojistenecDTO.getId().equals(zvalidovaneId)) {
-                    pojistenec = pojistenecDTO;
-                    break;
+                // Vyhledání pojištěnce v Listu
+                for (PojistenecDTO pojistenecDTO : pojistenci) {
+                    if (pojistenecDTO.getId().equals(zvalidovaneId)) {
+                        pojistenec = pojistenecDTO;
+                        break;
+                    }
                 }
-            }
-            if (pojistenec == null) {
-                ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.ID_NOT_FOUND_IN_FETCHED_INSURED.message + zvalidovaneId);
-                zahajPraciSPojistencem(pojistenci);
-            }
-        } else pojistenec = pojistenci.getFirst();
+                if (pojistenec == null) {
+                    ui.vypisZpravu(ZpravyOVysledkuOperaceEnum.ID_NOT_FOUND_IN_FETCHED_INSURED.message + zvalidovaneId);
+                    zahajPraciSPojistencem(pojistenci);
+                }
+            } else pojistenec = pojistenci.getFirst();
+        }
 
         switch (volbaCislo) {
             case 1:
@@ -169,8 +171,10 @@ public class InsuredController {
                 break;
             case 2:
                 odstranPojistence(pojistenec);
+                break;
             case 3:
                 ziskejVolbuZUvodniNabidky();
+                break;
         }
     }
 
@@ -201,8 +205,6 @@ public class InsuredController {
 
     private void upravPojistence(PojistenecDTO pojistenec) {
         ui.vypisText(NadpisyEnum.UPRAVA.nadpis);
-
-        ui.vypisText(NadpisyEnum.PRIDANI.nadpis);
         List<PopiskyEnum> popisky = pojistenecMappingDataProvider.getFieldLabels();
         List<ValidatorEnum> kriteriaValidace = pojistenecMappingDataProvider.getValidatorCriteria();
         List<String> zvalidovaneHodnoty = new ArrayList<>();

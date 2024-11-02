@@ -3,6 +3,7 @@ package cz.itnetwork.evidencepojisteni.mapping;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 
 public class InputDTOMapper<T> {
@@ -59,44 +60,48 @@ public class InputDTOMapper<T> {
     /**
      * Aktualizuje atributy DTO odpovídající položkám předaným v Map.
      * Prázdný String a absenci polozky interpretuje jako absenci změny daného atributu.
-     * @param dtoToUpdate DTO, jehož hodnoty se budou aktualizovat
+     * @param dtoToBeUpdated DTO, jehož hodnoty se budou aktualizovat
      * @param polozky Páry klíč-hodnota, kde klíč je jméno atributu a hodnota je příslušná hodnota
      * @return Aktualizované DTO
      */
-    public T updateDTO(T dtoToUpdate, Map<String, String> polozky) {
-       for (Map.Entry<String, String> polozka : polozky.entrySet()) {
-           // Odstranění prázdných položek, tedy těch, které se nebudou měnit
-           if (polozka.getValue().isBlank() || polozka.getValue() == null) {
-                polozky.remove(polozka);
+    public T updateDTO(T dtoToBeUpdated, Map<String, String> polozky) {
+        // Odstranění prázdných položek, tedy těch, které se nebudou měnit
+        Iterator<Map.Entry<String, String>> polozkyIterator = polozky.entrySet().iterator();
+        while (polozkyIterator.hasNext()) {
+            Map.Entry<String, String> polozka = polozkyIterator.next();
+            if (polozka.getValue() == null || polozka.getValue().isBlank()) {
+                polozkyIterator.remove();
             }
+        }
 
-        Arrays.stream(dtoToUpdate.getClass().getMethods())
-                .filter(metoda ->
-                        // Získání setterů s výjimkou setId
-                        metoda.getName().startsWith("set") &&
-                        !metoda.getName().equalsIgnoreCase("setId")
-                ).filter(metoda ->
-                        !polozky.containsKey(metoda.getName().substring(3).toLowerCase())
-                ).forEach(metoda -> {
-                    String setterFor = metoda.getName().substring(3).toLowerCase();
-                    Class<?> targetType = metoda.getParameterTypes()[0];
-                    String respectiveFieldValue = "";
-                    for (Map.Entry<String, String> upravovanaPolozka : polozky.entrySet()) {
-                        if (upravovanaPolozka.getKey().equalsIgnoreCase(setterFor)) {
-                            respectiveFieldValue = upravovanaPolozka.getValue();
+        for (Map.Entry<String, String> polozka : polozky.entrySet()) {
+                    Arrays.stream(dtoToBeUpdated.getClass().getMethods())
+                    .filter(metoda ->
+                            // Získání setterů s výjimkou setId
+                            metoda.getName().startsWith("set") &&
+                            !metoda.getName().equalsIgnoreCase("setId")
+                    ).filter(metoda ->
+                            polozky.containsKey(metoda.getName().substring(3).toLowerCase())
+                    ).forEach(metoda -> {
+                        String setterFor = metoda.getName().substring(3).toLowerCase();
+                        Class<?> targetType = metoda.getParameterTypes()[0];
+                        String respectiveFieldValue = "";
+                        for (Map.Entry<String, String> upravovanaPolozka : polozky.entrySet()) {
+                            if (upravovanaPolozka.getKey().equalsIgnoreCase(setterFor)) {
+                                respectiveFieldValue = upravovanaPolozka.getValue();
 
-                            // Převod na příslušný datový typ
-                            Object convertedValue = convertValueType(respectiveFieldValue, targetType);
-                            try {
-                                metoda.invoke(dtoToUpdate, convertedValue);
-                            } catch (IllegalAccessException | InvocationTargetException ex) {
-                                throw new RuntimeException("An exception occured during invoking DTO setters.", ex);
+                                // Převod na příslušný datový typ
+                                Object convertedValue = convertValueType(respectiveFieldValue, targetType);
+                                try {
+                                    metoda.invoke(dtoToBeUpdated, convertedValue);
+                                } catch (IllegalAccessException | InvocationTargetException ex) {
+                                    throw new RuntimeException("An exception occured during invoking DTO setters.", ex);
+                                }
                             }
                         }
-                    }
-                });
+                    });
         }
-        return dtoToUpdate;
+        return dtoToBeUpdated;
     }
 
     /**

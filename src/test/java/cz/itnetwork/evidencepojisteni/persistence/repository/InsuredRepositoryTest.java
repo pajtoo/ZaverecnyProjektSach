@@ -33,6 +33,7 @@ public class InsuredRepositoryTest {
     @Test
     void saveAndFind() {
         InsuredEntity savedEntity = insuredRepository.save(insuredEntity);
+        System.out.println(savedEntity);
 
         assertThat(savedEntity.getId()).isNotNull();
         assertThat(insuredRepository.findById(savedEntity.getId())).isPresent();

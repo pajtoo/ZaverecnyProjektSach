@@ -65,7 +65,7 @@ public class ValidatorVstupu {
 
         VOLBA_AKCE_V_MENU(
             1,
-            6
+            4
         ),
 
         VOLBA_ZPUSOBU_VYHLEDAVANI(
@@ -174,12 +174,10 @@ public class ValidatorVstupu {
                     vstup = zvalidujJmenoPrijmeni(vstup, validatorEnum);
                 }
                 // Validace délky textu
-                int minimalniDelka;
+                int minimalniDelka = validatorEnum.getMin();
                 int maximalniDelka = validatorEnum.getMax();
                 if (validatorEnum.getMin() <= 0) {
                     minimalniDelka = 1;
-                } else {
-                    minimalniDelka = validatorEnum.getMin();
                 }
                 if (
                         vstup.length() < minimalniDelka ||
@@ -197,7 +195,7 @@ public class ValidatorVstupu {
                 } catch (NumberFormatException ex) {
                     throw new NumberFormatException("Nezadali jste platné číslo.");
                 }
-                if (vstupCislo < validatorEnum.getMin() && vstupCislo > validatorEnum.getMax())
+                if (vstupCislo < validatorEnum.getMin() || vstupCislo > validatorEnum.getMax())
                     throw new InvalidUserInputException("Neplatná hodnota. Lze zadat pouze hodnotu od " + validatorEnum.getMin() + " do " + validatorEnum.getMax() + ". ");
                 return vstup;
         }

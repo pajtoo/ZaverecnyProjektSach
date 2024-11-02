@@ -8,11 +8,7 @@ public enum NadpisyEnum {
                     "2 - Podle ID%n")),
     PRIDANI("----- Přidání nového pojištěného -----%n"),
     UPRAVA(String.format("--------- Editace pojištěného --------%n" +
-            "------------------------------------------------%n" +
-            "- Pokud ponecháte u libovolného pole -%n" +
-            "- prázdnou hodnotu, bude zachována ----%n" +
-            "- hodnota stávající ------------------%n" +
-            "------------------------------------------------%n")),
+            "- prázdné pole = původní hodnota -%n")),
     ODSTRANENI("----- Odstranění pojištěnce -----%n" +
             "----- Odstranění pojištěnce -----%n");
 

@@ -72,7 +72,7 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
 
     @Override
     public void vypisText(String text) {
-        System.out.print(text);
+        System.out.printf(text);
     }
 
     @Override

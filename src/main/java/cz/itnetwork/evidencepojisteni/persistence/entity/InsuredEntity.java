@@ -13,7 +13,7 @@ public class InsuredEntity {
     private Long id;
     private String jmeno;
     private String prijmeni;
-    private int vek; // maximální věk = 130
+    private Integer vek; // maximální věk = 130
     private String telefon;
 
     public InsuredEntity() {};
@@ -58,11 +58,17 @@ public class InsuredEntity {
         this.telefon = telefon;
     }
 
-    public int getVek() {
+    public Integer getVek() {
         return vek;
     }
 
-    public void setVek(int vek) {
+    public void setVek(Integer vek) {
         this.vek = vek;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%d: %s, %s, %d, %s", id, prijmeni, jmeno, vek, telefon);
+    }
 }
+
