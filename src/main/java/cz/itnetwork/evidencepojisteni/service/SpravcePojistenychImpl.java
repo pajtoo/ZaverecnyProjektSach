@@ -65,7 +65,7 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
     public PojistenecDTO najdiPojistene(Long id) {
         InsuredEntity insuredEntity = insuredRepository
                 .findById(id).
-                orElseThrow(() -> new EntityNotFoundException(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message + id);
+                orElseThrow(() -> new EntityNotFoundException(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message + id));
         return insuredDTOEntityMapper.toDTO(insuredEntity);
     }
 

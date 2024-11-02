@@ -54,8 +54,6 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
     @Override
     public void vypisPojistence(List<PojistenecDTO> pojistenci) {
         if (!pojistenci.isEmpty()) {
-            System.out.println("----- Přehled pojištěných osob (ID: přijmení, jméno, věk, tel.) -----");
-
             for (PojistenecDTO pojistenec : pojistenci) {
                 System.out.println(pojistenec);
             }
@@ -66,82 +64,15 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
     }
 
     @Override
-    public String zahajVyhledavaniPojisteneho() {
-        System.out.println("----- Vyhledávání pojištěných -----");
-        System.out.println("Zvolte si prosím vyhledávací kritérium: ");
-        System.out.println("1 - Podle osobních údajů");
-        System.out.println("2 - Podle ID");
-        return ziskejVstup();
-    }
-
-    public String ziskejVolbuPraceSPojistencem() {
+    public void vypisNabidkuPraceSPojistencem() {
         System.out.println("1 - Upravit pojištěnce");
         System.out.println("2 - Odstranit pojištěnce");
         System.out.println("3 - Návrat do hlavní nabídky");
-        return ziskejVstup();
     }
 
     @Override
-    public List<String> ziskejHodnotyProVyhledavani(List<PopiskyEnum> popisky) {
-        // informovat o tom, že lze ponechat danou položku prázdnou
-        List<String> polozky = new ArrayList<>();
-        // Extrakce základní varianty popisku
-        popisky.forEach(popisek -> polozky.add(popisek.popisek));
-        return ziskejHodnotyKPolozkam(polozky);
-    }
-
-    /**
-     * Každou z položek uvede popiskem a následně si vyžádá zadání příslušné hodnoty.
-     *
-     * @param polozky Popisky položek, jejichž hodnota je požadována
-     * @return Seznam zadaných hodnot
-     */
-    @Override
-    public List<String> ziskejHodnotyKPolozkam(List<String> polozky) {
-        System.out.println("Zadejte údaje: ");
-        List<String> zadaneHodnoty = new ArrayList<>();
-        for (String polozka : polozky) {
-            System.out.print(polozka);
-            zadaneHodnoty.add(scanner.nextLine());
-        }
-        return zadaneHodnoty;
-    }
-
-    @Override
-    public List<String> pridejPojistence(List<PopiskyEnum> popisky) {
-        System.out.println("----- Přidání nového pojištěného -----");
-        List<String> polozky = new ArrayList<>();
-        // Extrakce základní varianty popisku
-        popisky.forEach(popisek -> polozky.add(popisek.popisek));
-        return ziskejHodnotyKPolozkam(polozky);
-    }
-
-    @Override
-    public List<String> upravPojistence(List<PopiskyEnum> popisky) {
-        System.out.println("--------- Editace pojištěného --------");
-        System.out.println(oddelovac);
-        System.out.println("- Pokud ponecháte u libovolného pole -");
-        System.out.println("- prázdnou hodnotu, bude zachována ----");
-        System.out.println("- hodnota stávající ------------------");
-        System.out.println(oddelovac);
-
-        List<String> polozky = new ArrayList<>();
-        // Extrakce varianty popisku pro editaci
-        popisky.forEach(popisek -> polozky.add(popisek.popisekEditace));
-        return ziskejHodnotyKPolozkam(polozky);
-    }
-
-    @Override
-    public void odstranPojistence() {
-        /*System.out.println("----- Odstranění pojištěnce -----");
-        System.out.print("Zadejte id pojištěnce, kterého chcete odstranit: ");
-        int id = vstup.zvalidujCislo(scanner.nextLine());
-        if (spravcePojistenych.odstranPojisteneho(id)) {
-            vypisZpravu(ZpravyOVysledkuOperaceEnum.DELETE_SUCCESS.message);
-        } else {
-            vypisZpravu(ZpravyOVysledkuOperaceEnum.INSURED_ID_NOT_FOUND.message);
-        }
-*/
+    public void vypisText(String text) {
+        System.out.print(text);
     }
 
     @Override
@@ -156,11 +87,6 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
         System.out.println(ex.getMessage());
     }
 
-    /**
-     * Vyzve uzivatele k zadání textu
-     *
-     * @return zadaný text
-     */
     @Override
     public String ziskejVstup() {
         return scanner.nextLine();
@@ -170,5 +96,4 @@ public class UzivatelskeRozhraniImpl implements UzivatelskeRozhrani {
     public void vyzviKOpakovaniZadani() {
         System.out.print("Opakujte prosím zadání: ");
     }
-
 }
