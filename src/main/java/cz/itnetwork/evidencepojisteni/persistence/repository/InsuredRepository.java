@@ -10,6 +10,4 @@ import java.util.List;
 @Repository
 public interface InsuredRepository extends JpaRepository<InsuredEntity,Long> {
 
-
-
 }

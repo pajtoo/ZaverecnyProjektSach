@@ -13,12 +13,11 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 /**
  * Třída je implementací pro perzistenci pomocí PostgreSQL
@@ -30,6 +29,7 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
 
     private final InsuredRepository insuredRepository;
     private final InsuredDTOEntityMapper insuredDTOEntityMapper;
+    private final Sort sortByPrijmeniAsc = Sort.by("prijmeni").ascending();
 
     @Autowired
     public SpravcePojistenychImpl(InsuredRepository insuredRepository, InsuredDTOEntityMapper insuredDTOEntityMapper) {
@@ -39,7 +39,7 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
 
     public List<PojistenecDTO> vratVsechnyPojistene() {
         List<PojistenecDTO> pojistenci = new ArrayList<>();
-        insuredRepository.findAll()
+        insuredRepository.findAll(sortByPrijmeniAsc)
                 .forEach(pojistenec -> {
                     pojistenci.add(insuredDTOEntityMapper.toDTO(pojistenec));
                 });
@@ -53,7 +53,7 @@ public class SpravcePojistenychImpl implements SpravcePojistenych {
                 .withIgnoreNullValues()
                 .withIgnorePaths("id");
         Example<InsuredEntity> example = Example.of(insuredEntity, matcher);
-        List<InsuredEntity> foundEntities = insuredRepository.findAll(example);
+        List<InsuredEntity> foundEntities = insuredRepository.findAll(example, sortByPrijmeniAsc);
         List<PojistenecDTO> foundPersons = new ArrayList<>();
         for (InsuredEntity foundEntity : foundEntities) {
             foundPersons.add(insuredDTOEntityMapper.toDTO(foundEntity));
