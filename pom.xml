@@ -9,7 +9,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
-        <exec.mainClass>cz.itnetwork.evidencepojisteni.Main</exec.mainClass>
         <spring-boot.version>3.3.4</spring-boot.version>
         <org.mapstruct.version>1.6.2</org.mapstruct.version>
         <ch.qos.logback.version>1.5.12</ch.qos.logback.version>
@@ -65,6 +64,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
+                <configuration>
+                    <mainClass>cz.itnetwork.evidencepojisteni.Main</mainClass>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
