@@ -2,25 +2,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package cz.itnetwork.evidencepojisteni;
-
-import java.util.ArrayList;
+package cz.itnetwork.evidencepojisteni.dto;
 
 /**
  * Třída reprezentující pojištěnce
  * @author Pavel
  */
-public class Pojistenec {
+public class PojistenecDTO {
 
-    private int id;
+    private Long id;
     private String jmeno;
     private String prijmeni;
-    private int vek; // maximální věk = 130
+    private Integer vek; // maximální věk = 130
     private String telefon;
     /* Ukládá se v mezinárodním formátu bez mezer. V případě nezadání
     mezinárodní předvolby je automaticky doplněna předvolba +420 */
 
-    private static int pocitadloId = 1;
+    /**
+     * No args constructor
+     */
+    public PojistenecDTO(){};
 
     /**
      * Konstruktor pojištěnce
@@ -29,13 +30,11 @@ public class Pojistenec {
      * @param vek Věk
      * @param telefon Telefon
      */
-    public Pojistenec(String jmeno, String prijmeni, int vek, String telefon) {
+    public PojistenecDTO(String jmeno, String prijmeni, Integer vek, String telefon) {
         this.jmeno = jmeno;
         this.prijmeni = prijmeni;
         this.vek = vek;
         this.telefon = telefon;
-        id = pocitadloId;
-        pocitadloId++;
     }
 
     /**
@@ -69,14 +68,14 @@ public class Pojistenec {
     /**
      * @return the vek
      */
-    public int getVek() {
+    public Integer getVek() {
         return vek;
     }
 
     /**
      * @param vek the vek to set
      */
-    public void setVek(int vek) {
+    public void setVek(Integer vek) {
         this.vek = vek;
     }
 
@@ -97,8 +96,15 @@ public class Pojistenec {
     /**
      * @return the id
      */
-    public int getId() {
+    public Long getId() {
         return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
